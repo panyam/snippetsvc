@@ -1,0 +1,10 @@
+
+What needs to hapen?
+
+
+1. Client should start with a "discoverer" - this can be static IP based or library based - where it looks at the DB for a set of registered hosts.
+2. Client uses the dsicver to "DiscoverController" - either once - or regularly each time a call returns a "NotMe" error.
+3. This is essentially a central server option.
+4. Problem with library based discoverer is that we are now implementing a distributed system to look like a centralized one.   And usually this is something we can solve with a single endpoint that is either behind a loadbalancer or a more robust distributed system instead of re-inventing things.
+
+For now let us use a static discoverer.

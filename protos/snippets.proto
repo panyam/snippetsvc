@@ -1,0 +1,130 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+option go_package = "github.com/panyam/snippets/protos";
+package protos;
+
+enum ShardState {
+  /**
+   * Shard is active, available and can be served.
+   */
+  ACTIVE = 0;
+
+  /**
+   * Shard is unavailable - may never have been here.
+   */
+  UNAVAILABLE = 1;
+
+  /**
+   * Shard is being loaded after an assignment (eg a partition has been
+   * assigned a shard it needs to build/initialize/copy from perhaps another replica).
+   * This can also mean that a shard target came back after being offline
+   * (eg due to a network partition) and the shard can be asked to resync/reload to
+   * catch up.
+   */
+  SYNCING = 2;
+}
+
+/**
+ * The snippet service provides an isolated, secure, lightweight and scalable environment
+ * for executing snippets and returning the output of the snippets.  The use case of this is
+ * in embedding code samples in documentation and tutorials and ensure where a static site
+ * generator can submit snippets to be excuted with different versions of code and ensure
+ * snippets are upto date with the versions of software being documented.
+ */
+service SnippetService {
+  /**
+   * Creates a new environment for a snippet.
+   */
+  rpc CreateEnvironment(CreateEnvironmentRequest) returns (CreateEnvironmentResponse) {}
+
+  /**
+   * Lists all environments.
+   */
+  rpc ListEnvironments(ListEnvironmentsRequest) returns (ListEnvironmentsResponse) {}
+
+  /**
+   * Updates all environments.
+   */
+  rpc UpdateEnvironment(UpdateEnvironmentRequest) returns (UpdateEnvironmentResponse) {}
+
+  /**
+   * Cancel/Deletes environments.
+   */
+  rpc DeleteEnvironment(DeleteEnvironmentRequest) returns (DeleteEnvironmentResponse) {}
+
+  /**
+   * Creates a new execution for a snippet.
+   */
+  rpc CreateExecution(CreateExecutionRequest) returns (CreateExecutionResponse) {}
+
+  /**
+   * Lists all executions.
+   */
+  rpc ListExecutions(ListExecutionsRequest) returns (ListExecutionsResponse) {}
+
+  /**
+   * Cancel/Deletes executions.
+   */
+  rpc DeleteExecutions(DeleteExecutionsRequest) returns (DeleteExecutionsResponse) {}
+
+}
+
+message CreateExecutionRequest {
+}
+
+message CreateExecutionResponse {
+}
+
+message DeleteExecutionsRequest {
+}
+
+message DeleteExecutionsResponse {
+  repeated Execution executions = 1;
+}
+
+message ListExecutionsRequest {
+}
+
+message ListExecutionsResponse {
+  repeated Execution executions = 1;
+}
+
+message CreateEnvironmentRequest {
+}
+
+message CreateEnvironmentResponse {
+}
+
+message ListEnvironmentsRequest {
+  bool include_shards = 1;
+}
+
+message ListEnvironmentsResponse {
+  repeated Environment hosts = 1;
+}
+
+message UpdateEnvironmentRequest {
+  Environment target = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateEnvironmentResponse {
+}
+
+message DeleteEnvironmentRequest {
+}
+
+message DeleteEnvironmentResponse {
+}
+
+message Execution {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+}
+
+message Environment {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+}
+
