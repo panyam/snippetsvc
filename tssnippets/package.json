@@ -1,6 +1,6 @@
 {
   "name": "snippetsvc",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "TS client bindings for Snippets service",
   "main": "dist/index.js",
   "scripts": {
