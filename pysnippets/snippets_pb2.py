@@ -15,7 +15,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from google.protobuf import field_mask_pb2 as google_dot_protobuf_dot_field__mask__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15protos/snippets.proto\x12\x06protos\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\"\x18\n\x16\x43reateExecutionRequest\"\x19\n\x17\x43reateExecutionResponse\"\x19\n\x17\x44\x65leteExecutionsRequest\"A\n\x18\x44\x65leteExecutionsResponse\x12%\n\nexecutions\x18\x01 \x03(\x0b\x32\x11.protos.Execution\"\x17\n\x15ListExecutionsRequest\"?\n\x16ListExecutionsResponse\x12%\n\nexecutions\x18\x01 \x03(\x0b\x32\x11.protos.Execution\"\x1a\n\x18\x43reateEnvironmentRequest\"\x1b\n\x19\x43reateEnvironmentResponse\"1\n\x17ListEnvironmentsRequest\x12\x16\n\x0einclude_shards\x18\x01 \x01(\x08\">\n\x18ListEnvironmentsResponse\x12\"\n\x05hosts\x18\x01 \x03(\x0b\x32\x13.protos.Environment\"p\n\x18UpdateEnvironmentRequest\x12#\n\x06target\x18\x01 \x01(\x0b\x32\x13.protos.Environment\x12/\n\x0bupdate_mask\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.FieldMask\"\x1b\n\x19UpdateEnvironmentResponse\"\x1a\n\x18\x44\x65leteEnvironmentRequest\"\x1b\n\x19\x44\x65leteEnvironmentResponse\"k\n\tExecution\x12.\n\ncreated_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"m\n\x0b\x45nvironment\x12.\n\ncreated_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp*6\n\nShardState\x12\n\n\x06\x41\x43TIVE\x10\x00\x12\x0f\n\x0bUNAVAILABLE\x10\x01\x12\x0b\n\x07SYNCING\x10\x02\x32\xff\x04\n\x0eSnippetService\x12Z\n\x11\x43reateEnvironment\x12 .protos.CreateEnvironmentRequest\x1a!.protos.CreateEnvironmentResponse\"\x00\x12W\n\x10ListEnvironments\x12\x1f.protos.ListEnvironmentsRequest\x1a .protos.ListEnvironmentsResponse\"\x00\x12Z\n\x11UpdateEnvironment\x12 .protos.UpdateEnvironmentRequest\x1a!.protos.UpdateEnvironmentResponse\"\x00\x12Z\n\x11\x44\x65leteEnvironment\x12 .protos.DeleteEnvironmentRequest\x1a!.protos.DeleteEnvironmentResponse\"\x00\x12T\n\x0f\x43reateExecution\x12\x1e.protos.CreateExecutionRequest\x1a\x1f.protos.CreateExecutionResponse\"\x00\x12Q\n\x0eListExecutions\x12\x1d.protos.ListExecutionsRequest\x1a\x1e.protos.ListExecutionsResponse\"\x00\x12W\n\x10\x44\x65leteExecutions\x12\x1f.protos.DeleteExecutionsRequest\x1a .protos.DeleteExecutionsResponse\"\x00\x42#Z!github.com/panyam/snippets/protosb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15protos/snippets.proto\x12\x06protos\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\"\xd2\x01\n\x0b\x45nvironment\x12.\n\ncreated_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x10\n\x08owner_id\x18\x03 \x01(\t\x12\n\n\x02id\x18\x04 \x01(\t\x12\x0c\n\x04name\x18\x05 \x01(\t\x12\x10\n\x08platform\x18\x07 \x01(\t\x12%\n\x0c\x64\x65pendencies\x18\x06 \x03(\x0b\x32\x0f.protos.Package\"\x9a\x01\n\x07Package\x12.\n\ncreated_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\x10\n\x08language\x18\x05 \x01(\t\"\xca\x01\n\tExecution\x12.\n\ncreated_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06\x65nv_id\x18\x03 \x01(\t\x12\x10\n\x08owner_id\x18\x04 \x01(\t\x12\n\n\x02id\x18\x05 \x01(\t\x12\x0f\n\x07snippet\x18\x06 \x01(\t\x12\x0e\n\x06output\x18\x07 \x01(\t\x12\x0e\n\x06status\x18\x08 \x01(\t\"D\n\x18\x45nsureEnvironmentRequest\x12(\n\x0b\x65nvironment\x18\x01 \x01(\x0b\x32\x13.protos.Environment\"W\n\x17ListEnvironmentsRequest\x12\x13\n\x06offset\x18\x01 \x01(\x05H\x00\x88\x01\x01\x12\x12\n\x05\x63ount\x18\x02 \x01(\x05H\x01\x88\x01\x01\x42\t\n\x07_offsetB\x08\n\x06_count\">\n\x18ListEnvironmentsResponse\x12\"\n\x05hosts\x18\x01 \x03(\x0b\x32\x13.protos.Environment\"u\n\x18UpdateEnvironmentRequest\x12(\n\x0b\x65nvironment\x18\x01 \x01(\x0b\x32\x13.protos.Environment\x12/\n\x0bupdate_mask\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.FieldMask\"\x1b\n\x19UpdateEnvironmentResponse\"&\n\x18\x44\x65leteEnvironmentRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\x1b\n\x19\x44\x65leteEnvironmentResponse\"\x18\n\x16\x43reateExecutionRequest\"\x19\n\x17\x43reateExecutionResponse\"\x19\n\x17\x44\x65leteExecutionsRequest\"A\n\x18\x44\x65leteExecutionsResponse\x12%\n\nexecutions\x18\x01 \x03(\x0b\x32\x11.protos.Execution\"\x17\n\x15ListExecutionsRequest\"?\n\x16ListExecutionsResponse\x12%\n\nexecutions\x18\x01 \x03(\x0b\x32\x11.protos.Execution2\xf1\x04\n\x0eSnippetService\x12L\n\x11\x45nsureEnvironment\x12 .protos.EnsureEnvironmentRequest\x1a\x13.protos.Environment\"\x00\x12W\n\x10ListEnvironments\x12\x1f.protos.ListEnvironmentsRequest\x1a .protos.ListEnvironmentsResponse\"\x00\x12Z\n\x11UpdateEnvironment\x12 .protos.UpdateEnvironmentRequest\x1a!.protos.UpdateEnvironmentResponse\"\x00\x12Z\n\x11\x44\x65leteEnvironment\x12 .protos.DeleteEnvironmentRequest\x1a!.protos.DeleteEnvironmentResponse\"\x00\x12T\n\x0f\x43reateExecution\x12\x1e.protos.CreateExecutionRequest\x1a\x1f.protos.CreateExecutionResponse\"\x00\x12Q\n\x0eListExecutions\x12\x1d.protos.ListExecutionsRequest\x1a\x1e.protos.ListExecutionsResponse\"\x00\x12W\n\x10\x44\x65leteExecutions\x12\x1f.protos.DeleteExecutionsRequest\x1a .protos.DeleteExecutionsResponse\"\x00\x42#Z!github.com/panyam/snippets/protosb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'protos.snippets_pb2', globals())
@@ -23,40 +23,38 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'Z!github.com/panyam/snippets/protos'
-  _SHARDSTATE._serialized_start=929
-  _SHARDSTATE._serialized_end=983
-  _CREATEEXECUTIONREQUEST._serialized_start=100
-  _CREATEEXECUTIONREQUEST._serialized_end=124
-  _CREATEEXECUTIONRESPONSE._serialized_start=126
-  _CREATEEXECUTIONRESPONSE._serialized_end=151
-  _DELETEEXECUTIONSREQUEST._serialized_start=153
-  _DELETEEXECUTIONSREQUEST._serialized_end=178
-  _DELETEEXECUTIONSRESPONSE._serialized_start=180
-  _DELETEEXECUTIONSRESPONSE._serialized_end=245
-  _LISTEXECUTIONSREQUEST._serialized_start=247
-  _LISTEXECUTIONSREQUEST._serialized_end=270
-  _LISTEXECUTIONSRESPONSE._serialized_start=272
-  _LISTEXECUTIONSRESPONSE._serialized_end=335
-  _CREATEENVIRONMENTREQUEST._serialized_start=337
-  _CREATEENVIRONMENTREQUEST._serialized_end=363
-  _CREATEENVIRONMENTRESPONSE._serialized_start=365
-  _CREATEENVIRONMENTRESPONSE._serialized_end=392
-  _LISTENVIRONMENTSREQUEST._serialized_start=394
-  _LISTENVIRONMENTSREQUEST._serialized_end=443
-  _LISTENVIRONMENTSRESPONSE._serialized_start=445
-  _LISTENVIRONMENTSRESPONSE._serialized_end=507
-  _UPDATEENVIRONMENTREQUEST._serialized_start=509
-  _UPDATEENVIRONMENTREQUEST._serialized_end=621
-  _UPDATEENVIRONMENTRESPONSE._serialized_start=623
-  _UPDATEENVIRONMENTRESPONSE._serialized_end=650
-  _DELETEENVIRONMENTREQUEST._serialized_start=652
-  _DELETEENVIRONMENTREQUEST._serialized_end=678
-  _DELETEENVIRONMENTRESPONSE._serialized_start=680
-  _DELETEENVIRONMENTRESPONSE._serialized_end=707
-  _EXECUTION._serialized_start=709
-  _EXECUTION._serialized_end=816
-  _ENVIRONMENT._serialized_start=818
-  _ENVIRONMENT._serialized_end=927
-  _SNIPPETSERVICE._serialized_start=986
-  _SNIPPETSERVICE._serialized_end=1625
+  _ENVIRONMENT._serialized_start=101
+  _ENVIRONMENT._serialized_end=311
+  _PACKAGE._serialized_start=314
+  _PACKAGE._serialized_end=468
+  _EXECUTION._serialized_start=471
+  _EXECUTION._serialized_end=673
+  _ENSUREENVIRONMENTREQUEST._serialized_start=675
+  _ENSUREENVIRONMENTREQUEST._serialized_end=743
+  _LISTENVIRONMENTSREQUEST._serialized_start=745
+  _LISTENVIRONMENTSREQUEST._serialized_end=832
+  _LISTENVIRONMENTSRESPONSE._serialized_start=834
+  _LISTENVIRONMENTSRESPONSE._serialized_end=896
+  _UPDATEENVIRONMENTREQUEST._serialized_start=898
+  _UPDATEENVIRONMENTREQUEST._serialized_end=1015
+  _UPDATEENVIRONMENTRESPONSE._serialized_start=1017
+  _UPDATEENVIRONMENTRESPONSE._serialized_end=1044
+  _DELETEENVIRONMENTREQUEST._serialized_start=1046
+  _DELETEENVIRONMENTREQUEST._serialized_end=1084
+  _DELETEENVIRONMENTRESPONSE._serialized_start=1086
+  _DELETEENVIRONMENTRESPONSE._serialized_end=1113
+  _CREATEEXECUTIONREQUEST._serialized_start=1115
+  _CREATEEXECUTIONREQUEST._serialized_end=1139
+  _CREATEEXECUTIONRESPONSE._serialized_start=1141
+  _CREATEEXECUTIONRESPONSE._serialized_end=1166
+  _DELETEEXECUTIONSREQUEST._serialized_start=1168
+  _DELETEEXECUTIONSREQUEST._serialized_end=1193
+  _DELETEEXECUTIONSRESPONSE._serialized_start=1195
+  _DELETEEXECUTIONSRESPONSE._serialized_end=1260
+  _LISTEXECUTIONSREQUEST._serialized_start=1262
+  _LISTEXECUTIONSREQUEST._serialized_end=1285
+  _LISTEXECUTIONSRESPONSE._serialized_start=1287
+  _LISTEXECUTIONSRESPONSE._serialized_end=1350
+  _SNIPPETSERVICE._serialized_start=1353
+  _SNIPPETSERVICE._serialized_end=1978
 # @@protoc_insertion_point(module_scope)

@@ -4,27 +4,6 @@ import "google/protobuf/field_mask.proto";
 option go_package = "github.com/panyam/snippets/protos";
 package protos;
 
-enum ShardState {
-  /**
-   * Shard is active, available and can be served.
-   */
-  ACTIVE = 0;
-
-  /**
-   * Shard is unavailable - may never have been here.
-   */
-  UNAVAILABLE = 1;
-
-  /**
-   * Shard is being loaded after an assignment (eg a partition has been
-   * assigned a shard it needs to build/initialize/copy from perhaps another replica).
-   * This can also mean that a shard target came back after being offline
-   * (eg due to a network partition) and the shard can be asked to resync/reload to
-   * catch up.
-   */
-  SYNCING = 2;
-}
-
 /**
  * The snippet service provides an isolated, secure, lightweight and scalable environment
  * for executing snippets and returning the output of the snippets.  The use case of this is
@@ -36,7 +15,7 @@ service SnippetService {
   /**
    * Creates a new environment for a snippet.
    */
-  rpc CreateEnvironment(CreateEnvironmentRequest) returns (CreateEnvironmentResponse) {}
+  rpc EnsureEnvironment(EnsureEnvironmentRequest) returns (Environment) {}
 
   /**
    * Lists all environments.
@@ -70,6 +49,81 @@ service SnippetService {
 
 }
 
+message Environment {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+  string owner_id = 3;
+  string id = 4;
+
+  /**
+   * name of the environment.
+   */
+  string name = 5;
+
+  /**
+   * The platform how the environment is created/managed etc.
+   * eg Node
+   */
+  string platform = 7;
+  repeated Package dependencies = 6;
+}
+
+message Package {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+  string name = 3;
+  string version = 4;
+  string language = 5;
+}
+
+message Execution {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+  /**
+   * An execution can run in a pre-defined environment.
+   */
+  string env_id = 3;
+  string owner_id = 4;
+  string id = 5;
+
+  // Code snippet being run
+  string snippet = 6;
+
+  // Output result of this execution
+  string output = 7;
+
+  // Status of the execution
+  string status = 8;
+}
+
+message EnsureEnvironmentRequest {
+  Environment environment = 1;
+}
+
+message ListEnvironmentsRequest {
+  optional int32 offset = 1;
+  optional int32 count = 2;
+}
+
+message ListEnvironmentsResponse {
+  repeated Environment hosts = 1;
+}
+
+message UpdateEnvironmentRequest {
+  Environment environment = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateEnvironmentResponse {
+}
+
+message DeleteEnvironmentRequest {
+  string id = 1;
+}
+
+message DeleteEnvironmentResponse {
+}
+
 message CreateExecutionRequest {
 }
 
@@ -89,42 +143,3 @@ message ListExecutionsRequest {
 message ListExecutionsResponse {
   repeated Execution executions = 1;
 }
-
-message CreateEnvironmentRequest {
-}
-
-message CreateEnvironmentResponse {
-}
-
-message ListEnvironmentsRequest {
-  bool include_shards = 1;
-}
-
-message ListEnvironmentsResponse {
-  repeated Environment hosts = 1;
-}
-
-message UpdateEnvironmentRequest {
-  Environment target = 1;
-  google.protobuf.FieldMask update_mask = 2;
-}
-
-message UpdateEnvironmentResponse {
-}
-
-message DeleteEnvironmentRequest {
-}
-
-message DeleteEnvironmentResponse {
-}
-
-message Execution {
-  google.protobuf.Timestamp created_at = 1;
-  google.protobuf.Timestamp updated_at = 2;
-}
-
-message Environment {
-  google.protobuf.Timestamp created_at = 1;
-  google.protobuf.Timestamp updated_at = 2;
-}
-

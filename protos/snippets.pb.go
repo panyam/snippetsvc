@@ -22,73 +22,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type ShardState int32
-
-const (
-	//*
-	// Shard is active, available and can be served.
-	ShardState_ACTIVE ShardState = 0
-	//*
-	// Shard is unavailable - may never have been here.
-	ShardState_UNAVAILABLE ShardState = 1
-	//*
-	// Shard is being loaded after an assignment (eg a partition has been
-	// assigned a shard it needs to build/initialize/copy from perhaps another replica).
-	// This can also mean that a shard target came back after being offline
-	// (eg due to a network partition) and the shard can be asked to resync/reload to
-	// catch up.
-	ShardState_SYNCING ShardState = 2
-)
-
-// Enum value maps for ShardState.
-var (
-	ShardState_name = map[int32]string{
-		0: "ACTIVE",
-		1: "UNAVAILABLE",
-		2: "SYNCING",
-	}
-	ShardState_value = map[string]int32{
-		"ACTIVE":      0,
-		"UNAVAILABLE": 1,
-		"SYNCING":     2,
-	}
-)
-
-func (x ShardState) Enum() *ShardState {
-	p := new(ShardState)
-	*p = x
-	return p
-}
-
-func (x ShardState) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ShardState) Descriptor() protoreflect.EnumDescriptor {
-	return file_protos_snippets_proto_enumTypes[0].Descriptor()
-}
-
-func (ShardState) Type() protoreflect.EnumType {
-	return &file_protos_snippets_proto_enumTypes[0]
-}
-
-func (x ShardState) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use ShardState.Descriptor instead.
-func (ShardState) EnumDescriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{0}
-}
-
-type CreateExecutionRequest struct {
+type Environment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	OwnerId   string                 `protobuf:"bytes,3,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	Id        string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
+	//*
+	// name of the environment.
+	Name string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	//*
+	// The platform how the environment is created/managed etc.
+	// eg Node
+	Platform     string     `protobuf:"bytes,7,opt,name=platform,proto3" json:"platform,omitempty"`
+	Dependencies []*Package `protobuf:"bytes,6,rep,name=dependencies,proto3" json:"dependencies,omitempty"`
 }
 
-func (x *CreateExecutionRequest) Reset() {
-	*x = CreateExecutionRequest{}
+func (x *Environment) Reset() {
+	*x = Environment{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protos_snippets_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -96,13 +50,13 @@ func (x *CreateExecutionRequest) Reset() {
 	}
 }
 
-func (x *CreateExecutionRequest) String() string {
+func (x *Environment) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateExecutionRequest) ProtoMessage() {}
+func (*Environment) ProtoMessage() {}
 
-func (x *CreateExecutionRequest) ProtoReflect() protoreflect.Message {
+func (x *Environment) ProtoReflect() protoreflect.Message {
 	mi := &file_protos_snippets_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -114,19 +68,74 @@ func (x *CreateExecutionRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateExecutionRequest.ProtoReflect.Descriptor instead.
-func (*CreateExecutionRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use Environment.ProtoReflect.Descriptor instead.
+func (*Environment) Descriptor() ([]byte, []int) {
 	return file_protos_snippets_proto_rawDescGZIP(), []int{0}
 }
 
-type CreateExecutionResponse struct {
+func (x *Environment) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Environment) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Environment) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *Environment) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Environment) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Environment) GetPlatform() string {
+	if x != nil {
+		return x.Platform
+	}
+	return ""
+}
+
+func (x *Environment) GetDependencies() []*Package {
+	if x != nil {
+		return x.Dependencies
+	}
+	return nil
+}
+
+type Package struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Name      string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Version   string                 `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
+	Language  string                 `protobuf:"bytes,5,opt,name=language,proto3" json:"language,omitempty"`
 }
 
-func (x *CreateExecutionResponse) Reset() {
-	*x = CreateExecutionResponse{}
+func (x *Package) Reset() {
+	*x = Package{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protos_snippets_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -134,13 +143,13 @@ func (x *CreateExecutionResponse) Reset() {
 	}
 }
 
-func (x *CreateExecutionResponse) String() string {
+func (x *Package) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateExecutionResponse) ProtoMessage() {}
+func (*Package) ProtoMessage() {}
 
-func (x *CreateExecutionResponse) ProtoReflect() protoreflect.Message {
+func (x *Package) ProtoReflect() protoreflect.Message {
 	mi := &file_protos_snippets_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -152,19 +161,68 @@ func (x *CreateExecutionResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateExecutionResponse.ProtoReflect.Descriptor instead.
-func (*CreateExecutionResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use Package.ProtoReflect.Descriptor instead.
+func (*Package) Descriptor() ([]byte, []int) {
 	return file_protos_snippets_proto_rawDescGZIP(), []int{1}
 }
 
-type DeleteExecutionsRequest struct {
+func (x *Package) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Package) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Package) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Package) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *Package) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+type Execution struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	//*
+	// An execution can run in a pre-defined environment.
+	EnvId   string `protobuf:"bytes,3,opt,name=env_id,json=envId,proto3" json:"env_id,omitempty"`
+	OwnerId string `protobuf:"bytes,4,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	Id      string `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
+	// Code snippet being run
+	Snippet string `protobuf:"bytes,6,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	// Output result of this execution
+	Output string `protobuf:"bytes,7,opt,name=output,proto3" json:"output,omitempty"`
+	// Status of the execution
+	Status string `protobuf:"bytes,8,opt,name=status,proto3" json:"status,omitempty"`
 }
 
-func (x *DeleteExecutionsRequest) Reset() {
-	*x = DeleteExecutionsRequest{}
+func (x *Execution) Reset() {
+	*x = Execution{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protos_snippets_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -172,13 +230,13 @@ func (x *DeleteExecutionsRequest) Reset() {
 	}
 }
 
-func (x *DeleteExecutionsRequest) String() string {
+func (x *Execution) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteExecutionsRequest) ProtoMessage() {}
+func (*Execution) ProtoMessage() {}
 
-func (x *DeleteExecutionsRequest) ProtoReflect() protoreflect.Message {
+func (x *Execution) ProtoReflect() protoreflect.Message {
 	mi := &file_protos_snippets_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -190,21 +248,77 @@ func (x *DeleteExecutionsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteExecutionsRequest.ProtoReflect.Descriptor instead.
-func (*DeleteExecutionsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use Execution.ProtoReflect.Descriptor instead.
+func (*Execution) Descriptor() ([]byte, []int) {
 	return file_protos_snippets_proto_rawDescGZIP(), []int{2}
 }
 
-type DeleteExecutionsResponse struct {
+func (x *Execution) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Execution) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Execution) GetEnvId() string {
+	if x != nil {
+		return x.EnvId
+	}
+	return ""
+}
+
+func (x *Execution) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *Execution) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Execution) GetSnippet() string {
+	if x != nil {
+		return x.Snippet
+	}
+	return ""
+}
+
+func (x *Execution) GetOutput() string {
+	if x != nil {
+		return x.Output
+	}
+	return ""
+}
+
+func (x *Execution) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+type EnsureEnvironmentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Executions []*Execution `protobuf:"bytes,1,rep,name=executions,proto3" json:"executions,omitempty"`
+	Environment *Environment `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
 }
 
-func (x *DeleteExecutionsResponse) Reset() {
-	*x = DeleteExecutionsResponse{}
+func (x *EnsureEnvironmentRequest) Reset() {
+	*x = EnsureEnvironmentRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protos_snippets_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -212,13 +326,13 @@ func (x *DeleteExecutionsResponse) Reset() {
 	}
 }
 
-func (x *DeleteExecutionsResponse) String() string {
+func (x *EnsureEnvironmentRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteExecutionsResponse) ProtoMessage() {}
+func (*EnsureEnvironmentRequest) ProtoMessage() {}
 
-func (x *DeleteExecutionsResponse) ProtoReflect() protoreflect.Message {
+func (x *EnsureEnvironmentRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_protos_snippets_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -230,177 +344,16 @@ func (x *DeleteExecutionsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteExecutionsResponse.ProtoReflect.Descriptor instead.
-func (*DeleteExecutionsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use EnsureEnvironmentRequest.ProtoReflect.Descriptor instead.
+func (*EnsureEnvironmentRequest) Descriptor() ([]byte, []int) {
 	return file_protos_snippets_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *DeleteExecutionsResponse) GetExecutions() []*Execution {
+func (x *EnsureEnvironmentRequest) GetEnvironment() *Environment {
 	if x != nil {
-		return x.Executions
+		return x.Environment
 	}
 	return nil
-}
-
-type ListExecutionsRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *ListExecutionsRequest) Reset() {
-	*x = ListExecutionsRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ListExecutionsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListExecutionsRequest) ProtoMessage() {}
-
-func (x *ListExecutionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListExecutionsRequest.ProtoReflect.Descriptor instead.
-func (*ListExecutionsRequest) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{4}
-}
-
-type ListExecutionsResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Executions []*Execution `protobuf:"bytes,1,rep,name=executions,proto3" json:"executions,omitempty"`
-}
-
-func (x *ListExecutionsResponse) Reset() {
-	*x = ListExecutionsResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ListExecutionsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListExecutionsResponse) ProtoMessage() {}
-
-func (x *ListExecutionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListExecutionsResponse.ProtoReflect.Descriptor instead.
-func (*ListExecutionsResponse) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *ListExecutionsResponse) GetExecutions() []*Execution {
-	if x != nil {
-		return x.Executions
-	}
-	return nil
-}
-
-type CreateEnvironmentRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *CreateEnvironmentRequest) Reset() {
-	*x = CreateEnvironmentRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateEnvironmentRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateEnvironmentRequest) ProtoMessage() {}
-
-func (x *CreateEnvironmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateEnvironmentRequest.ProtoReflect.Descriptor instead.
-func (*CreateEnvironmentRequest) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{6}
-}
-
-type CreateEnvironmentResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *CreateEnvironmentResponse) Reset() {
-	*x = CreateEnvironmentResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateEnvironmentResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateEnvironmentResponse) ProtoMessage() {}
-
-func (x *CreateEnvironmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateEnvironmentResponse.ProtoReflect.Descriptor instead.
-func (*CreateEnvironmentResponse) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{7}
 }
 
 type ListEnvironmentsRequest struct {
@@ -408,13 +361,14 @@ type ListEnvironmentsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	IncludeShards bool `protobuf:"varint,1,opt,name=include_shards,json=includeShards,proto3" json:"include_shards,omitempty"`
+	Offset *int32 `protobuf:"varint,1,opt,name=offset,proto3,oneof" json:"offset,omitempty"`
+	Count  *int32 `protobuf:"varint,2,opt,name=count,proto3,oneof" json:"count,omitempty"`
 }
 
 func (x *ListEnvironmentsRequest) Reset() {
 	*x = ListEnvironmentsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[8]
+		mi := &file_protos_snippets_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -427,7 +381,7 @@ func (x *ListEnvironmentsRequest) String() string {
 func (*ListEnvironmentsRequest) ProtoMessage() {}
 
 func (x *ListEnvironmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[8]
+	mi := &file_protos_snippets_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -440,14 +394,21 @@ func (x *ListEnvironmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEnvironmentsRequest.ProtoReflect.Descriptor instead.
 func (*ListEnvironmentsRequest) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{8}
+	return file_protos_snippets_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *ListEnvironmentsRequest) GetIncludeShards() bool {
-	if x != nil {
-		return x.IncludeShards
+func (x *ListEnvironmentsRequest) GetOffset() int32 {
+	if x != nil && x.Offset != nil {
+		return *x.Offset
 	}
-	return false
+	return 0
+}
+
+func (x *ListEnvironmentsRequest) GetCount() int32 {
+	if x != nil && x.Count != nil {
+		return *x.Count
+	}
+	return 0
 }
 
 type ListEnvironmentsResponse struct {
@@ -461,7 +422,7 @@ type ListEnvironmentsResponse struct {
 func (x *ListEnvironmentsResponse) Reset() {
 	*x = ListEnvironmentsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[9]
+		mi := &file_protos_snippets_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -474,7 +435,7 @@ func (x *ListEnvironmentsResponse) String() string {
 func (*ListEnvironmentsResponse) ProtoMessage() {}
 
 func (x *ListEnvironmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[9]
+	mi := &file_protos_snippets_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -487,7 +448,7 @@ func (x *ListEnvironmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEnvironmentsResponse.ProtoReflect.Descriptor instead.
 func (*ListEnvironmentsResponse) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{9}
+	return file_protos_snippets_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListEnvironmentsResponse) GetHosts() []*Environment {
@@ -502,14 +463,14 @@ type UpdateEnvironmentRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Target     *Environment           `protobuf:"bytes,1,opt,name=target,proto3" json:"target,omitempty"`
-	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	Environment *Environment           `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
+	UpdateMask  *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
 func (x *UpdateEnvironmentRequest) Reset() {
 	*x = UpdateEnvironmentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[10]
+		mi := &file_protos_snippets_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -522,7 +483,7 @@ func (x *UpdateEnvironmentRequest) String() string {
 func (*UpdateEnvironmentRequest) ProtoMessage() {}
 
 func (x *UpdateEnvironmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[10]
+	mi := &file_protos_snippets_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -535,12 +496,12 @@ func (x *UpdateEnvironmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEnvironmentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEnvironmentRequest) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{10}
+	return file_protos_snippets_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *UpdateEnvironmentRequest) GetTarget() *Environment {
+func (x *UpdateEnvironmentRequest) GetEnvironment() *Environment {
 	if x != nil {
-		return x.Target
+		return x.Environment
 	}
 	return nil
 }
@@ -561,7 +522,7 @@ type UpdateEnvironmentResponse struct {
 func (x *UpdateEnvironmentResponse) Reset() {
 	*x = UpdateEnvironmentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[11]
+		mi := &file_protos_snippets_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -574,7 +535,7 @@ func (x *UpdateEnvironmentResponse) String() string {
 func (*UpdateEnvironmentResponse) ProtoMessage() {}
 
 func (x *UpdateEnvironmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[11]
+	mi := &file_protos_snippets_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -587,19 +548,21 @@ func (x *UpdateEnvironmentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEnvironmentResponse.ProtoReflect.Descriptor instead.
 func (*UpdateEnvironmentResponse) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{11}
+	return file_protos_snippets_proto_rawDescGZIP(), []int{7}
 }
 
 type DeleteEnvironmentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *DeleteEnvironmentRequest) Reset() {
 	*x = DeleteEnvironmentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[12]
+		mi := &file_protos_snippets_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -612,7 +575,7 @@ func (x *DeleteEnvironmentRequest) String() string {
 func (*DeleteEnvironmentRequest) ProtoMessage() {}
 
 func (x *DeleteEnvironmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[12]
+	mi := &file_protos_snippets_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -625,7 +588,14 @@ func (x *DeleteEnvironmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteEnvironmentRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEnvironmentRequest) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{12}
+	return file_protos_snippets_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DeleteEnvironmentRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
 }
 
 type DeleteEnvironmentResponse struct {
@@ -637,7 +607,7 @@ type DeleteEnvironmentResponse struct {
 func (x *DeleteEnvironmentResponse) Reset() {
 	*x = DeleteEnvironmentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_snippets_proto_msgTypes[13]
+		mi := &file_protos_snippets_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -650,7 +620,7 @@ func (x *DeleteEnvironmentResponse) String() string {
 func (*DeleteEnvironmentResponse) ProtoMessage() {}
 
 func (x *DeleteEnvironmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_snippets_proto_msgTypes[13]
+	mi := &file_protos_snippets_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -663,20 +633,178 @@ func (x *DeleteEnvironmentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteEnvironmentResponse.ProtoReflect.Descriptor instead.
 func (*DeleteEnvironmentResponse) Descriptor() ([]byte, []int) {
-	return file_protos_snippets_proto_rawDescGZIP(), []int{13}
+	return file_protos_snippets_proto_rawDescGZIP(), []int{9}
 }
 
-type Execution struct {
+type CreateExecutionRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *CreateExecutionRequest) Reset() {
+	*x = CreateExecutionRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_snippets_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateExecutionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExecutionRequest) ProtoMessage() {}
+
+func (x *CreateExecutionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_snippets_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExecutionRequest.ProtoReflect.Descriptor instead.
+func (*CreateExecutionRequest) Descriptor() ([]byte, []int) {
+	return file_protos_snippets_proto_rawDescGZIP(), []int{10}
+}
+
+type CreateExecutionResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *CreateExecutionResponse) Reset() {
+	*x = CreateExecutionResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_snippets_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateExecutionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateExecutionResponse) ProtoMessage() {}
+
+func (x *CreateExecutionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_snippets_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateExecutionResponse.ProtoReflect.Descriptor instead.
+func (*CreateExecutionResponse) Descriptor() ([]byte, []int) {
+	return file_protos_snippets_proto_rawDescGZIP(), []int{11}
+}
+
+type DeleteExecutionsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DeleteExecutionsRequest) Reset() {
+	*x = DeleteExecutionsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_snippets_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteExecutionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteExecutionsRequest) ProtoMessage() {}
+
+func (x *DeleteExecutionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_snippets_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteExecutionsRequest.ProtoReflect.Descriptor instead.
+func (*DeleteExecutionsRequest) Descriptor() ([]byte, []int) {
+	return file_protos_snippets_proto_rawDescGZIP(), []int{12}
+}
+
+type DeleteExecutionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Executions []*Execution `protobuf:"bytes,1,rep,name=executions,proto3" json:"executions,omitempty"`
 }
 
-func (x *Execution) Reset() {
-	*x = Execution{}
+func (x *DeleteExecutionsResponse) Reset() {
+	*x = DeleteExecutionsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_snippets_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteExecutionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteExecutionsResponse) ProtoMessage() {}
+
+func (x *DeleteExecutionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_snippets_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteExecutionsResponse.ProtoReflect.Descriptor instead.
+func (*DeleteExecutionsResponse) Descriptor() ([]byte, []int) {
+	return file_protos_snippets_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *DeleteExecutionsResponse) GetExecutions() []*Execution {
+	if x != nil {
+		return x.Executions
+	}
+	return nil
+}
+
+type ListExecutionsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ListExecutionsRequest) Reset() {
+	*x = ListExecutionsRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protos_snippets_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -684,13 +812,13 @@ func (x *Execution) Reset() {
 	}
 }
 
-func (x *Execution) String() string {
+func (x *ListExecutionsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Execution) ProtoMessage() {}
+func (*ListExecutionsRequest) ProtoMessage() {}
 
-func (x *Execution) ProtoReflect() protoreflect.Message {
+func (x *ListExecutionsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_protos_snippets_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -702,36 +830,21 @@ func (x *Execution) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Execution.ProtoReflect.Descriptor instead.
-func (*Execution) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListExecutionsRequest.ProtoReflect.Descriptor instead.
+func (*ListExecutionsRequest) Descriptor() ([]byte, []int) {
 	return file_protos_snippets_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *Execution) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *Execution) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
-type Environment struct {
+type ListExecutionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Executions []*Execution `protobuf:"bytes,1,rep,name=executions,proto3" json:"executions,omitempty"`
 }
 
-func (x *Environment) Reset() {
-	*x = Environment{}
+func (x *ListExecutionsResponse) Reset() {
+	*x = ListExecutionsResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protos_snippets_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -739,13 +852,13 @@ func (x *Environment) Reset() {
 	}
 }
 
-func (x *Environment) String() string {
+func (x *ListExecutionsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Environment) ProtoMessage() {}
+func (*ListExecutionsResponse) ProtoMessage() {}
 
-func (x *Environment) ProtoReflect() protoreflect.Message {
+func (x *ListExecutionsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_protos_snippets_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -757,21 +870,14 @@ func (x *Environment) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Environment.ProtoReflect.Descriptor instead.
-func (*Environment) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListExecutionsResponse.ProtoReflect.Descriptor instead.
+func (*ListExecutionsResponse) Descriptor() ([]byte, []int) {
 	return file_protos_snippets_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *Environment) GetCreatedAt() *timestamppb.Timestamp {
+func (x *ListExecutionsResponse) GetExecutions() []*Execution {
 	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *Environment) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
+		return x.Executions
 	}
 	return nil
 }
@@ -785,112 +891,144 @@ var file_protos_snippets_proto_rawDesc = []byte{
 	0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x1a, 0x20, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
 	0x66, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0x18, 0x0a, 0x16, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x19, 0x0a, 0x17,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x19, 0x0a, 0x17, 0x44, 0x65, 0x6c, 0x65, 0x74,
-	0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x22, 0x4d, 0x0a, 0x18, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x31,
-	0x0a, 0x0a, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x45, 0x78, 0x65, 0x63,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e,
-	0x73, 0x22, 0x17, 0x0a, 0x15, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x4b, 0x0a, 0x16, 0x4c, 0x69,
-	0x73, 0x74, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x31, 0x0a, 0x0a, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f,
-	0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x73, 0x2e, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x65, 0x78, 0x65,
-	0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x1a, 0x0a, 0x18, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x22, 0x1b, 0x0a, 0x19, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76,
-	0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x40, 0x0a, 0x17, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d,
-	0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x69,
-	0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x5f, 0x73, 0x68, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x0d, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x53, 0x68, 0x61, 0x72,
-	0x64, 0x73, 0x22, 0x45, 0x0a, 0x18, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f,
-	0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x29,
-	0x0a, 0x05, 0x68, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65,
-	0x6e, 0x74, 0x52, 0x05, 0x68, 0x6f, 0x73, 0x74, 0x73, 0x22, 0x84, 0x01, 0x0a, 0x18, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2b, 0x0a, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e,
-	0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x06, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x12, 0x3b, 0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x6d, 0x61,
-	0x73, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64,
-	0x4d, 0x61, 0x73, 0x6b, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x73, 0x6b,
-	0x22, 0x1b, 0x0a, 0x19, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f,
-	0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1a, 0x0a,
-	0x18, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65,
-	0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x1b, 0x0a, 0x19, 0x44, 0x65, 0x6c,
-	0x65, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x81, 0x01, 0x0a, 0x09, 0x45, 0x78, 0x65, 0x63, 0x75,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f,
+	0x74, 0x6f, 0x22, 0x93, 0x02, 0x0a, 0x0b, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65,
+	0x6e, 0x74, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x39, 0x0a,
+	0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x75,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x77, 0x6e, 0x65,
+	0x72, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x77, 0x6e, 0x65,
+	0x72, 0x49, 0x64, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x12, 0x33, 0x0a, 0x0c, 0x64, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e, 0x63,
+	0x69, 0x65, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x73, 0x2e, 0x50, 0x61, 0x63, 0x6b, 0x61, 0x67, 0x65, 0x52, 0x0c, 0x64, 0x65, 0x70, 0x65,
+	0x6e, 0x64, 0x65, 0x6e, 0x63, 0x69, 0x65, 0x73, 0x22, 0xc9, 0x01, 0x0a, 0x07, 0x50, 0x61, 0x63,
+	0x6b, 0x61, 0x67, 0x65, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f,
 	0x61, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
 	0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12,
 	0x39, 0x0a, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
-	0x09, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x22, 0x83, 0x01, 0x0a, 0x0b, 0x45,
-	0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
-	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x39, 0x0a, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64,
-	0x5f, 0x61, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74,
-	0x2a, 0x36, 0x0a, 0x0a, 0x53, 0x68, 0x61, 0x72, 0x64, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x0a,
-	0x0a, 0x06, 0x41, 0x43, 0x54, 0x49, 0x56, 0x45, 0x10, 0x00, 0x12, 0x0f, 0x0a, 0x0b, 0x55, 0x4e,
-	0x41, 0x56, 0x41, 0x49, 0x4c, 0x41, 0x42, 0x4c, 0x45, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x53,
-	0x59, 0x4e, 0x43, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x32, 0xff, 0x04, 0x0a, 0x0e, 0x53, 0x6e, 0x69,
-	0x70, 0x70, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5a, 0x0a, 0x11, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74,
-	0x12, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x57, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x45,
-	0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x1f, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e,
-	0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f,
-	0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
-	0x12, 0x5a, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f,
-	0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73,
-	0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65,
-	0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x11,
-	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e,
-	0x74, 0x12, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74,
+	0x09, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18,
+	0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x6e, 0x67,
+	0x75, 0x61, 0x67, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x6e, 0x67,
+	0x75, 0x61, 0x67, 0x65, 0x22, 0x8d, 0x02, 0x0a, 0x09, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x39, 0x0a,
+	0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x75,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x15, 0x0a, 0x06, 0x65, 0x6e, 0x76, 0x5f,
+	0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x6e, 0x76, 0x49, 0x64, 0x12,
+	0x19, 0x0a, 0x08, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x07, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x49, 0x64, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x6e,
+	0x69, 0x70, 0x70, 0x65, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x6e, 0x69,
+	0x70, 0x70, 0x65, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x6f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x16, 0x0a, 0x06,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x22, 0x51, 0x0a, 0x18, 0x45, 0x6e, 0x73, 0x75, 0x72, 0x65, 0x45, 0x6e,
+	0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x35, 0x0a, 0x0b, 0x65, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x45,
+	0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x0b, 0x65, 0x6e, 0x76, 0x69,
+	0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x22, 0x66, 0x0a, 0x17, 0x4c, 0x69, 0x73, 0x74, 0x45,
+	0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x1b, 0x0a, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x48, 0x00, 0x52, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x88, 0x01, 0x01, 0x12,
+	0x19, 0x0a, 0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x48, 0x01,
+	0x52, 0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x88, 0x01, 0x01, 0x42, 0x09, 0x0a, 0x07, 0x5f, 0x6f,
+	0x66, 0x66, 0x73, 0x65, 0x74, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x22,
+	0x45, 0x0a, 0x18, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65,
+	0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x29, 0x0a, 0x05, 0x68,
+	0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x73, 0x2e, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52,
+	0x05, 0x68, 0x6f, 0x73, 0x74, 0x73, 0x22, 0x8e, 0x01, 0x0a, 0x18, 0x55, 0x70, 0x64, 0x61, 0x74,
 	0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x6c,
-	0x65, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x54, 0x0a, 0x0f, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1e, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x51,
-	0x0a, 0x0e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73,
-	0x12, 0x1d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78,
-	0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x1e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x65,
-	0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x00, 0x12, 0x57, 0x0a, 0x10, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x44,
-	0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e,
-	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x23, 0x5a, 0x21, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x70, 0x61, 0x6e, 0x79, 0x61, 0x6d, 0x2f,
-	0x73, 0x6e, 0x69, 0x70, 0x70, 0x65, 0x74, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x73, 0x74, 0x12, 0x35, 0x0a, 0x0b, 0x65, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65,
+	0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x73, 0x2e, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x0b, 0x65,
+	0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x3b, 0x0a, 0x0b, 0x75, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x4d, 0x61, 0x73, 0x6b, 0x52, 0x0a, 0x75, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x4d, 0x61, 0x73, 0x6b, 0x22, 0x1b, 0x0a, 0x19, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x0a, 0x18, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x6e,
+	0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64,
+	0x22, 0x1b, 0x0a, 0x19, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f,
+	0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x0a,
+	0x16, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x19, 0x0a, 0x17, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x19, 0x0a, 0x17, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x4d, 0x0a,
+	0x18, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x31, 0x0a, 0x0a, 0x65, 0x78, 0x65,
+	0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x0a, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x17, 0x0a, 0x15,
+	0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x4b, 0x0a, 0x16, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x65,
+	0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x31, 0x0a, 0x0a, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x45, 0x78, 0x65,
+	0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f,
+	0x6e, 0x73, 0x32, 0xf1, 0x04, 0x0a, 0x0e, 0x53, 0x6e, 0x69, 0x70, 0x70, 0x65, 0x74, 0x53, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x4c, 0x0a, 0x11, 0x45, 0x6e, 0x73, 0x75, 0x72, 0x65, 0x45,
+	0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x20, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x73, 0x2e, 0x45, 0x6e, 0x73, 0x75, 0x72, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f,
+	0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e,
+	0x74, 0x22, 0x00, 0x12, 0x57, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72,
+	0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x1f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e,
+	0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x11,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e,
+	0x74, 0x12, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x11, 0x44, 0x65, 0x6c, 0x65,
+	0x74, 0x65, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x20, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x6e, 0x76,
+	0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45,
+	0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x00, 0x12, 0x54, 0x0a, 0x0f, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78,
+	0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73,
+	0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73,
+	0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x51, 0x0a, 0x0e, 0x4c, 0x69,
+	0x73, 0x74, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1d, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69,
+	0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x57, 0x0a,
+	0x10, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x12, 0x1f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74,
+	0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x6c, 0x65,
+	0x74, 0x65, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x23, 0x5a, 0x21, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x70, 0x61, 0x6e, 0x79, 0x61, 0x6d, 0x2f, 0x73, 0x6e, 0x69, 0x70,
+	0x70, 0x65, 0x74, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -905,58 +1043,60 @@ func file_protos_snippets_proto_rawDescGZIP() []byte {
 	return file_protos_snippets_proto_rawDescData
 }
 
-var file_protos_snippets_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_protos_snippets_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_protos_snippets_proto_goTypes = []interface{}{
-	(ShardState)(0),                   // 0: protos.ShardState
-	(*CreateExecutionRequest)(nil),    // 1: protos.CreateExecutionRequest
-	(*CreateExecutionResponse)(nil),   // 2: protos.CreateExecutionResponse
-	(*DeleteExecutionsRequest)(nil),   // 3: protos.DeleteExecutionsRequest
-	(*DeleteExecutionsResponse)(nil),  // 4: protos.DeleteExecutionsResponse
-	(*ListExecutionsRequest)(nil),     // 5: protos.ListExecutionsRequest
-	(*ListExecutionsResponse)(nil),    // 6: protos.ListExecutionsResponse
-	(*CreateEnvironmentRequest)(nil),  // 7: protos.CreateEnvironmentRequest
-	(*CreateEnvironmentResponse)(nil), // 8: protos.CreateEnvironmentResponse
-	(*ListEnvironmentsRequest)(nil),   // 9: protos.ListEnvironmentsRequest
-	(*ListEnvironmentsResponse)(nil),  // 10: protos.ListEnvironmentsResponse
-	(*UpdateEnvironmentRequest)(nil),  // 11: protos.UpdateEnvironmentRequest
-	(*UpdateEnvironmentResponse)(nil), // 12: protos.UpdateEnvironmentResponse
-	(*DeleteEnvironmentRequest)(nil),  // 13: protos.DeleteEnvironmentRequest
-	(*DeleteEnvironmentResponse)(nil), // 14: protos.DeleteEnvironmentResponse
-	(*Execution)(nil),                 // 15: protos.Execution
-	(*Environment)(nil),               // 16: protos.Environment
+	(*Environment)(nil),               // 0: protos.Environment
+	(*Package)(nil),                   // 1: protos.Package
+	(*Execution)(nil),                 // 2: protos.Execution
+	(*EnsureEnvironmentRequest)(nil),  // 3: protos.EnsureEnvironmentRequest
+	(*ListEnvironmentsRequest)(nil),   // 4: protos.ListEnvironmentsRequest
+	(*ListEnvironmentsResponse)(nil),  // 5: protos.ListEnvironmentsResponse
+	(*UpdateEnvironmentRequest)(nil),  // 6: protos.UpdateEnvironmentRequest
+	(*UpdateEnvironmentResponse)(nil), // 7: protos.UpdateEnvironmentResponse
+	(*DeleteEnvironmentRequest)(nil),  // 8: protos.DeleteEnvironmentRequest
+	(*DeleteEnvironmentResponse)(nil), // 9: protos.DeleteEnvironmentResponse
+	(*CreateExecutionRequest)(nil),    // 10: protos.CreateExecutionRequest
+	(*CreateExecutionResponse)(nil),   // 11: protos.CreateExecutionResponse
+	(*DeleteExecutionsRequest)(nil),   // 12: protos.DeleteExecutionsRequest
+	(*DeleteExecutionsResponse)(nil),  // 13: protos.DeleteExecutionsResponse
+	(*ListExecutionsRequest)(nil),     // 14: protos.ListExecutionsRequest
+	(*ListExecutionsResponse)(nil),    // 15: protos.ListExecutionsResponse
+	(*timestamppb.Timestamp)(nil),     // 16: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),     // 17: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),     // 18: google.protobuf.Timestamp
 }
 var file_protos_snippets_proto_depIdxs = []int32{
-	15, // 0: protos.DeleteExecutionsResponse.executions:type_name -> protos.Execution
-	15, // 1: protos.ListExecutionsResponse.executions:type_name -> protos.Execution
-	16, // 2: protos.ListEnvironmentsResponse.hosts:type_name -> protos.Environment
-	16, // 3: protos.UpdateEnvironmentRequest.target:type_name -> protos.Environment
-	17, // 4: protos.UpdateEnvironmentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	18, // 5: protos.Execution.created_at:type_name -> google.protobuf.Timestamp
-	18, // 6: protos.Execution.updated_at:type_name -> google.protobuf.Timestamp
-	18, // 7: protos.Environment.created_at:type_name -> google.protobuf.Timestamp
-	18, // 8: protos.Environment.updated_at:type_name -> google.protobuf.Timestamp
-	7,  // 9: protos.SnippetService.CreateEnvironment:input_type -> protos.CreateEnvironmentRequest
-	9,  // 10: protos.SnippetService.ListEnvironments:input_type -> protos.ListEnvironmentsRequest
-	11, // 11: protos.SnippetService.UpdateEnvironment:input_type -> protos.UpdateEnvironmentRequest
-	13, // 12: protos.SnippetService.DeleteEnvironment:input_type -> protos.DeleteEnvironmentRequest
-	1,  // 13: protos.SnippetService.CreateExecution:input_type -> protos.CreateExecutionRequest
-	5,  // 14: protos.SnippetService.ListExecutions:input_type -> protos.ListExecutionsRequest
-	3,  // 15: protos.SnippetService.DeleteExecutions:input_type -> protos.DeleteExecutionsRequest
-	8,  // 16: protos.SnippetService.CreateEnvironment:output_type -> protos.CreateEnvironmentResponse
-	10, // 17: protos.SnippetService.ListEnvironments:output_type -> protos.ListEnvironmentsResponse
-	12, // 18: protos.SnippetService.UpdateEnvironment:output_type -> protos.UpdateEnvironmentResponse
-	14, // 19: protos.SnippetService.DeleteEnvironment:output_type -> protos.DeleteEnvironmentResponse
-	2,  // 20: protos.SnippetService.CreateExecution:output_type -> protos.CreateExecutionResponse
-	6,  // 21: protos.SnippetService.ListExecutions:output_type -> protos.ListExecutionsResponse
-	4,  // 22: protos.SnippetService.DeleteExecutions:output_type -> protos.DeleteExecutionsResponse
-	16, // [16:23] is the sub-list for method output_type
-	9,  // [9:16] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	16, // 0: protos.Environment.created_at:type_name -> google.protobuf.Timestamp
+	16, // 1: protos.Environment.updated_at:type_name -> google.protobuf.Timestamp
+	1,  // 2: protos.Environment.dependencies:type_name -> protos.Package
+	16, // 3: protos.Package.created_at:type_name -> google.protobuf.Timestamp
+	16, // 4: protos.Package.updated_at:type_name -> google.protobuf.Timestamp
+	16, // 5: protos.Execution.created_at:type_name -> google.protobuf.Timestamp
+	16, // 6: protos.Execution.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 7: protos.EnsureEnvironmentRequest.environment:type_name -> protos.Environment
+	0,  // 8: protos.ListEnvironmentsResponse.hosts:type_name -> protos.Environment
+	0,  // 9: protos.UpdateEnvironmentRequest.environment:type_name -> protos.Environment
+	17, // 10: protos.UpdateEnvironmentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	2,  // 11: protos.DeleteExecutionsResponse.executions:type_name -> protos.Execution
+	2,  // 12: protos.ListExecutionsResponse.executions:type_name -> protos.Execution
+	3,  // 13: protos.SnippetService.EnsureEnvironment:input_type -> protos.EnsureEnvironmentRequest
+	4,  // 14: protos.SnippetService.ListEnvironments:input_type -> protos.ListEnvironmentsRequest
+	6,  // 15: protos.SnippetService.UpdateEnvironment:input_type -> protos.UpdateEnvironmentRequest
+	8,  // 16: protos.SnippetService.DeleteEnvironment:input_type -> protos.DeleteEnvironmentRequest
+	10, // 17: protos.SnippetService.CreateExecution:input_type -> protos.CreateExecutionRequest
+	14, // 18: protos.SnippetService.ListExecutions:input_type -> protos.ListExecutionsRequest
+	12, // 19: protos.SnippetService.DeleteExecutions:input_type -> protos.DeleteExecutionsRequest
+	0,  // 20: protos.SnippetService.EnsureEnvironment:output_type -> protos.Environment
+	5,  // 21: protos.SnippetService.ListEnvironments:output_type -> protos.ListEnvironmentsResponse
+	7,  // 22: protos.SnippetService.UpdateEnvironment:output_type -> protos.UpdateEnvironmentResponse
+	9,  // 23: protos.SnippetService.DeleteEnvironment:output_type -> protos.DeleteEnvironmentResponse
+	11, // 24: protos.SnippetService.CreateExecution:output_type -> protos.CreateExecutionResponse
+	15, // 25: protos.SnippetService.ListExecutions:output_type -> protos.ListExecutionsResponse
+	13, // 26: protos.SnippetService.DeleteExecutions:output_type -> protos.DeleteExecutionsResponse
+	20, // [20:27] is the sub-list for method output_type
+	13, // [13:20] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_protos_snippets_proto_init() }
@@ -966,186 +1106,6 @@ func file_protos_snippets_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_protos_snippets_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateExecutionRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateExecutionResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteExecutionsRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteExecutionsResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListExecutionsRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListExecutionsResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateEnvironmentRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateEnvironmentResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListEnvironmentsRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListEnvironmentsResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateEnvironmentRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateEnvironmentResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteEnvironmentRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteEnvironmentResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Execution); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_snippets_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Environment); i {
 			case 0:
 				return &v.state
@@ -1157,20 +1117,200 @@ func file_protos_snippets_proto_init() {
 				return nil
 			}
 		}
+		file_protos_snippets_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Package); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Execution); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EnsureEnvironmentRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListEnvironmentsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListEnvironmentsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateEnvironmentRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateEnvironmentResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteEnvironmentRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteEnvironmentResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateExecutionRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateExecutionResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteExecutionsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteExecutionsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListExecutionsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_snippets_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListExecutionsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
+	file_protos_snippets_proto_msgTypes[4].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_protos_snippets_proto_rawDesc,
-			NumEnums:      1,
+			NumEnums:      0,
 			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_protos_snippets_proto_goTypes,
 		DependencyIndexes: file_protos_snippets_proto_depIdxs,
-		EnumInfos:         file_protos_snippets_proto_enumTypes,
 		MessageInfos:      file_protos_snippets_proto_msgTypes,
 	}.Build()
 	File_protos_snippets_proto = out.File

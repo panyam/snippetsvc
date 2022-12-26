@@ -20,10 +20,10 @@ class SnippetServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.CreateEnvironment = channel.unary_unary(
-                '/protos.SnippetService/CreateEnvironment',
-                request_serializer=protos_dot_snippets__pb2.CreateEnvironmentRequest.SerializeToString,
-                response_deserializer=protos_dot_snippets__pb2.CreateEnvironmentResponse.FromString,
+        self.EnsureEnvironment = channel.unary_unary(
+                '/protos.SnippetService/EnsureEnvironment',
+                request_serializer=protos_dot_snippets__pb2.EnsureEnvironmentRequest.SerializeToString,
+                response_deserializer=protos_dot_snippets__pb2.Environment.FromString,
                 )
         self.ListEnvironments = channel.unary_unary(
                 '/protos.SnippetService/ListEnvironments',
@@ -66,7 +66,7 @@ class SnippetServiceServicer(object):
     snippets are upto date with the versions of software being documented.
     """
 
-    def CreateEnvironment(self, request, context):
+    def EnsureEnvironment(self, request, context):
         """*
         Creates a new environment for a snippet.
         """
@@ -125,10 +125,10 @@ class SnippetServiceServicer(object):
 
 def add_SnippetServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'CreateEnvironment': grpc.unary_unary_rpc_method_handler(
-                    servicer.CreateEnvironment,
-                    request_deserializer=protos_dot_snippets__pb2.CreateEnvironmentRequest.FromString,
-                    response_serializer=protos_dot_snippets__pb2.CreateEnvironmentResponse.SerializeToString,
+            'EnsureEnvironment': grpc.unary_unary_rpc_method_handler(
+                    servicer.EnsureEnvironment,
+                    request_deserializer=protos_dot_snippets__pb2.EnsureEnvironmentRequest.FromString,
+                    response_serializer=protos_dot_snippets__pb2.Environment.SerializeToString,
             ),
             'ListEnvironments': grpc.unary_unary_rpc_method_handler(
                     servicer.ListEnvironments,
@@ -177,7 +177,7 @@ class SnippetService(object):
     """
 
     @staticmethod
-    def CreateEnvironment(request,
+    def EnsureEnvironment(request,
             target,
             options=(),
             channel_credentials=None,
@@ -187,9 +187,9 @@ class SnippetService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/protos.SnippetService/CreateEnvironment',
-            protos_dot_snippets__pb2.CreateEnvironmentRequest.SerializeToString,
-            protos_dot_snippets__pb2.CreateEnvironmentResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/protos.SnippetService/EnsureEnvironment',
+            protos_dot_snippets__pb2.EnsureEnvironmentRequest.SerializeToString,
+            protos_dot_snippets__pb2.Environment.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

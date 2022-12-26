@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type SnippetServiceClient interface {
 	//*
 	// Creates a new environment for a snippet.
-	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*CreateEnvironmentResponse, error)
+	EnsureEnvironment(ctx context.Context, in *EnsureEnvironmentRequest, opts ...grpc.CallOption) (*Environment, error)
 	//*
 	// Lists all environments.
 	ListEnvironments(ctx context.Context, in *ListEnvironmentsRequest, opts ...grpc.CallOption) (*ListEnvironmentsResponse, error)
@@ -49,9 +49,9 @@ func NewSnippetServiceClient(cc grpc.ClientConnInterface) SnippetServiceClient {
 	return &snippetServiceClient{cc}
 }
 
-func (c *snippetServiceClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*CreateEnvironmentResponse, error) {
-	out := new(CreateEnvironmentResponse)
-	err := c.cc.Invoke(ctx, "/protos.SnippetService/CreateEnvironment", in, out, opts...)
+func (c *snippetServiceClient) EnsureEnvironment(ctx context.Context, in *EnsureEnvironmentRequest, opts ...grpc.CallOption) (*Environment, error) {
+	out := new(Environment)
+	err := c.cc.Invoke(ctx, "/protos.SnippetService/EnsureEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (c *snippetServiceClient) DeleteExecutions(ctx context.Context, in *DeleteE
 type SnippetServiceServer interface {
 	//*
 	// Creates a new environment for a snippet.
-	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*CreateEnvironmentResponse, error)
+	EnsureEnvironment(context.Context, *EnsureEnvironmentRequest) (*Environment, error)
 	//*
 	// Lists all environments.
 	ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error)
@@ -144,8 +144,8 @@ type SnippetServiceServer interface {
 type UnimplementedSnippetServiceServer struct {
 }
 
-func (UnimplementedSnippetServiceServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*CreateEnvironmentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateEnvironment not implemented")
+func (UnimplementedSnippetServiceServer) EnsureEnvironment(context.Context, *EnsureEnvironmentRequest) (*Environment, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnsureEnvironment not implemented")
 }
 func (UnimplementedSnippetServiceServer) ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEnvironments not implemented")
@@ -178,20 +178,20 @@ func RegisterSnippetServiceServer(s grpc.ServiceRegistrar, srv SnippetServiceSer
 	s.RegisterService(&SnippetService_ServiceDesc, srv)
 }
 
-func _SnippetService_CreateEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateEnvironmentRequest)
+func _SnippetService_EnsureEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnsureEnvironmentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SnippetServiceServer).CreateEnvironment(ctx, in)
+		return srv.(SnippetServiceServer).EnsureEnvironment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protos.SnippetService/CreateEnvironment",
+		FullMethod: "/protos.SnippetService/EnsureEnvironment",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SnippetServiceServer).CreateEnvironment(ctx, req.(*CreateEnvironmentRequest))
+		return srv.(SnippetServiceServer).EnsureEnvironment(ctx, req.(*EnsureEnvironmentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -312,8 +312,8 @@ var SnippetService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SnippetServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateEnvironment",
-			Handler:    _SnippetService_CreateEnvironment_Handler,
+			MethodName: "EnsureEnvironment",
+			Handler:    _SnippetService_EnsureEnvironment_Handler,
 		},
 		{
 			MethodName: "ListEnvironments",
