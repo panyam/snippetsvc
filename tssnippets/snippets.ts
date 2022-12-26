@@ -33,20 +33,38 @@ export interface Execution {
   updated_at:
     | Date
     | undefined;
-  /** An execution can run in a pre-defined environment. */
-  env_id: string;
+  /** Owner requesting this environment */
   owner_id: string;
+  /** ID of this execution */
   id: string;
   /** Code snippet being run */
   snippet: string;
-  /** Output result of this execution */
-  output: string;
+  /**
+   * Output result of this execution
+   * Since this is a URI it could be a file, a url or even
+   * raw contents via string:// or bin:// or json://
+   */
+  output_uri: string;
   /** Status of the execution */
   status: string;
+  env_details?: { $case: "env_id"; env_id: string } | { $case: "new_env"; new_env: Environment };
 }
 
-export interface EnsureEnvironmentRequest {
+export interface CreateEnvironmentRequest {
   environment: Environment | undefined;
+}
+
+export interface GetEnvironmentsRequest {
+  env_ids: string[];
+}
+
+export interface GetEnvironmentsResponse {
+  environments: { [key: string]: Environment };
+}
+
+export interface GetEnvironmentsResponse_EnvironmentsEntry {
+  key: string;
+  value: Environment | undefined;
 }
 
 export interface ListEnvironmentsRequest {
@@ -297,12 +315,12 @@ function createBaseExecution(): Execution {
   return {
     created_at: undefined,
     updated_at: undefined,
-    env_id: "",
     owner_id: "",
     id: "",
     snippet: "",
-    output: "",
+    output_uri: "",
     status: "",
+    env_details: undefined,
   };
 }
 
@@ -314,9 +332,6 @@ export const Execution = {
     if (message.updated_at !== undefined) {
       Timestamp.encode(toTimestamp(message.updated_at), writer.uint32(18).fork()).ldelim();
     }
-    if (message.env_id !== "") {
-      writer.uint32(26).string(message.env_id);
-    }
     if (message.owner_id !== "") {
       writer.uint32(34).string(message.owner_id);
     }
@@ -326,11 +341,17 @@ export const Execution = {
     if (message.snippet !== "") {
       writer.uint32(50).string(message.snippet);
     }
-    if (message.output !== "") {
-      writer.uint32(58).string(message.output);
+    if (message.output_uri !== "") {
+      writer.uint32(58).string(message.output_uri);
     }
     if (message.status !== "") {
       writer.uint32(66).string(message.status);
+    }
+    if (message.env_details?.$case === "env_id") {
+      writer.uint32(74).string(message.env_details.env_id);
+    }
+    if (message.env_details?.$case === "new_env") {
+      Environment.encode(message.env_details.new_env, writer.uint32(82).fork()).ldelim();
     }
     return writer;
   },
@@ -348,9 +369,6 @@ export const Execution = {
         case 2:
           message.updated_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
-        case 3:
-          message.env_id = reader.string();
-          break;
         case 4:
           message.owner_id = reader.string();
           break;
@@ -361,10 +379,16 @@ export const Execution = {
           message.snippet = reader.string();
           break;
         case 7:
-          message.output = reader.string();
+          message.output_uri = reader.string();
           break;
         case 8:
           message.status = reader.string();
+          break;
+        case 9:
+          message.env_details = { $case: "env_id", env_id: reader.string() };
+          break;
+        case 10:
+          message.env_details = { $case: "new_env", new_env: Environment.decode(reader, reader.uint32()) };
           break;
         default:
           reader.skipType(tag & 7);
@@ -378,12 +402,16 @@ export const Execution = {
     return {
       created_at: isSet(object.created_at) ? fromJsonTimestamp(object.created_at) : undefined,
       updated_at: isSet(object.updated_at) ? fromJsonTimestamp(object.updated_at) : undefined,
-      env_id: isSet(object.env_id) ? String(object.env_id) : "",
       owner_id: isSet(object.owner_id) ? String(object.owner_id) : "",
       id: isSet(object.id) ? String(object.id) : "",
       snippet: isSet(object.snippet) ? String(object.snippet) : "",
-      output: isSet(object.output) ? String(object.output) : "",
+      output_uri: isSet(object.output_uri) ? String(object.output_uri) : "",
       status: isSet(object.status) ? String(object.status) : "",
+      env_details: isSet(object.env_id)
+        ? { $case: "env_id", env_id: String(object.env_id) }
+        : isSet(object.new_env)
+        ? { $case: "new_env", new_env: Environment.fromJSON(object.new_env) }
+        : undefined,
     };
   },
 
@@ -391,12 +419,14 @@ export const Execution = {
     const obj: any = {};
     message.created_at !== undefined && (obj.created_at = message.created_at.toISOString());
     message.updated_at !== undefined && (obj.updated_at = message.updated_at.toISOString());
-    message.env_id !== undefined && (obj.env_id = message.env_id);
     message.owner_id !== undefined && (obj.owner_id = message.owner_id);
     message.id !== undefined && (obj.id = message.id);
     message.snippet !== undefined && (obj.snippet = message.snippet);
-    message.output !== undefined && (obj.output = message.output);
+    message.output_uri !== undefined && (obj.output_uri = message.output_uri);
     message.status !== undefined && (obj.status = message.status);
+    message.env_details?.$case === "env_id" && (obj.env_id = message.env_details?.env_id);
+    message.env_details?.$case === "new_env" &&
+      (obj.new_env = message.env_details?.new_env ? Environment.toJSON(message.env_details?.new_env) : undefined);
     return obj;
   },
 
@@ -404,32 +434,45 @@ export const Execution = {
     const message = createBaseExecution();
     message.created_at = object.created_at ?? undefined;
     message.updated_at = object.updated_at ?? undefined;
-    message.env_id = object.env_id ?? "";
     message.owner_id = object.owner_id ?? "";
     message.id = object.id ?? "";
     message.snippet = object.snippet ?? "";
-    message.output = object.output ?? "";
+    message.output_uri = object.output_uri ?? "";
     message.status = object.status ?? "";
+    if (
+      object.env_details?.$case === "env_id" &&
+      object.env_details?.env_id !== undefined &&
+      object.env_details?.env_id !== null
+    ) {
+      message.env_details = { $case: "env_id", env_id: object.env_details.env_id };
+    }
+    if (
+      object.env_details?.$case === "new_env" &&
+      object.env_details?.new_env !== undefined &&
+      object.env_details?.new_env !== null
+    ) {
+      message.env_details = { $case: "new_env", new_env: Environment.fromPartial(object.env_details.new_env) };
+    }
     return message;
   },
 };
 
-function createBaseEnsureEnvironmentRequest(): EnsureEnvironmentRequest {
+function createBaseCreateEnvironmentRequest(): CreateEnvironmentRequest {
   return { environment: undefined };
 }
 
-export const EnsureEnvironmentRequest = {
-  encode(message: EnsureEnvironmentRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const CreateEnvironmentRequest = {
+  encode(message: CreateEnvironmentRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.environment !== undefined) {
       Environment.encode(message.environment, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): EnsureEnvironmentRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateEnvironmentRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEnsureEnvironmentRequest();
+    const message = createBaseCreateEnvironmentRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -444,21 +487,204 @@ export const EnsureEnvironmentRequest = {
     return message;
   },
 
-  fromJSON(object: any): EnsureEnvironmentRequest {
+  fromJSON(object: any): CreateEnvironmentRequest {
     return { environment: isSet(object.environment) ? Environment.fromJSON(object.environment) : undefined };
   },
 
-  toJSON(message: EnsureEnvironmentRequest): unknown {
+  toJSON(message: CreateEnvironmentRequest): unknown {
     const obj: any = {};
     message.environment !== undefined &&
       (obj.environment = message.environment ? Environment.toJSON(message.environment) : undefined);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<EnsureEnvironmentRequest>, I>>(object: I): EnsureEnvironmentRequest {
-    const message = createBaseEnsureEnvironmentRequest();
+  fromPartial<I extends Exact<DeepPartial<CreateEnvironmentRequest>, I>>(object: I): CreateEnvironmentRequest {
+    const message = createBaseCreateEnvironmentRequest();
     message.environment = (object.environment !== undefined && object.environment !== null)
       ? Environment.fromPartial(object.environment)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseGetEnvironmentsRequest(): GetEnvironmentsRequest {
+  return { env_ids: [] };
+}
+
+export const GetEnvironmentsRequest = {
+  encode(message: GetEnvironmentsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.env_ids) {
+      writer.uint32(10).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetEnvironmentsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetEnvironmentsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.env_ids.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetEnvironmentsRequest {
+    return { env_ids: Array.isArray(object?.env_ids) ? object.env_ids.map((e: any) => String(e)) : [] };
+  },
+
+  toJSON(message: GetEnvironmentsRequest): unknown {
+    const obj: any = {};
+    if (message.env_ids) {
+      obj.env_ids = message.env_ids.map((e) => e);
+    } else {
+      obj.env_ids = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetEnvironmentsRequest>, I>>(object: I): GetEnvironmentsRequest {
+    const message = createBaseGetEnvironmentsRequest();
+    message.env_ids = object.env_ids?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseGetEnvironmentsResponse(): GetEnvironmentsResponse {
+  return { environments: {} };
+}
+
+export const GetEnvironmentsResponse = {
+  encode(message: GetEnvironmentsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    Object.entries(message.environments).forEach(([key, value]) => {
+      GetEnvironmentsResponse_EnvironmentsEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetEnvironmentsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetEnvironmentsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          const entry1 = GetEnvironmentsResponse_EnvironmentsEntry.decode(reader, reader.uint32());
+          if (entry1.value !== undefined) {
+            message.environments[entry1.key] = entry1.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetEnvironmentsResponse {
+    return {
+      environments: isObject(object.environments)
+        ? Object.entries(object.environments).reduce<{ [key: string]: Environment }>((acc, [key, value]) => {
+          acc[key] = Environment.fromJSON(value);
+          return acc;
+        }, {})
+        : {},
+    };
+  },
+
+  toJSON(message: GetEnvironmentsResponse): unknown {
+    const obj: any = {};
+    obj.environments = {};
+    if (message.environments) {
+      Object.entries(message.environments).forEach(([k, v]) => {
+        obj.environments[k] = Environment.toJSON(v);
+      });
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetEnvironmentsResponse>, I>>(object: I): GetEnvironmentsResponse {
+    const message = createBaseGetEnvironmentsResponse();
+    message.environments = Object.entries(object.environments ?? {}).reduce<{ [key: string]: Environment }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = Environment.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseGetEnvironmentsResponse_EnvironmentsEntry(): GetEnvironmentsResponse_EnvironmentsEntry {
+  return { key: "", value: undefined };
+}
+
+export const GetEnvironmentsResponse_EnvironmentsEntry = {
+  encode(message: GetEnvironmentsResponse_EnvironmentsEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      Environment.encode(message.value, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetEnvironmentsResponse_EnvironmentsEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetEnvironmentsResponse_EnvironmentsEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = Environment.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetEnvironmentsResponse_EnvironmentsEntry {
+    return {
+      key: isSet(object.key) ? String(object.key) : "",
+      value: isSet(object.value) ? Environment.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: GetEnvironmentsResponse_EnvironmentsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value ? Environment.toJSON(message.value) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetEnvironmentsResponse_EnvironmentsEntry>, I>>(
+    object: I,
+  ): GetEnvironmentsResponse_EnvironmentsEntry {
+    const message = createBaseGetEnvironmentsResponse_EnvironmentsEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null)
+      ? Environment.fromPartial(object.value)
       : undefined;
     return message;
   },
@@ -1034,11 +1260,20 @@ export const SnippetServiceDefinition = {
   fullName: "protos.SnippetService",
   methods: {
     /** Creates a new environment for a snippet. */
-    ensureEnvironment: {
-      name: "EnsureEnvironment",
-      requestType: EnsureEnvironmentRequest,
+    createEnvironment: {
+      name: "CreateEnvironment",
+      requestType: CreateEnvironmentRequest,
       requestStream: false,
       responseType: Environment,
+      responseStream: false,
+      options: {},
+    },
+    /** Gets information about the given environments. */
+    getEnvironments: {
+      name: "GetEnvironments",
+      requestType: GetEnvironmentsRequest,
+      requestStream: false,
+      responseType: GetEnvironmentsResponse,
       responseStream: false,
       options: {},
     },
@@ -1131,6 +1366,10 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
+}
+
+function isObject(value: any): boolean {
+  return typeof value === "object" && value !== null;
 }
 
 function isSet(value: any): boolean {

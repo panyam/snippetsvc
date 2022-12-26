@@ -21,7 +21,7 @@ func (db *DB) GetExecution() ([]*Execution, error) {
 	return nil, nil
 }
 
-func (db *DB) GetEnvironment() ([]*Environment, error) {
+func (db *DB) GetEnvironments(ids []string) ([]*Environment, error) {
 	return nil, nil
 }
 

@@ -15,7 +15,12 @@ service SnippetService {
   /**
    * Creates a new environment for a snippet.
    */
-  rpc EnsureEnvironment(EnsureEnvironmentRequest) returns (Environment) {}
+  rpc CreateEnvironment(CreateEnvironmentRequest) returns (Environment) {}
+
+  /**
+   * Gets information about the given environments.
+   */
+  rpc GetEnvironments(GetEnvironmentsRequest) returns (GetEnvironmentsResponse) {}
 
   /**
    * Lists all environments.
@@ -79,25 +84,47 @@ message Package {
 message Execution {
   google.protobuf.Timestamp created_at = 1;
   google.protobuf.Timestamp updated_at = 2;
-  /**
-   * An execution can run in a pre-defined environment.
-   */
-  string env_id = 3;
+
+  // Owner requesting this environment
   string owner_id = 4;
+
+  // ID of this execution
   string id = 5;
 
   // Code snippet being run
   string snippet = 6;
 
   // Output result of this execution
-  string output = 7;
+  // Since this is a URI it could be a file, a url or even
+  // raw contents via string:// or bin:// or json://
+  string output_uri = 7;
 
   // Status of the execution
   string status = 8;
+
+  /**
+   * The environment in which this execution is to be run
+   */
+  oneof env_details {
+    // Run against a specific environment
+    string env_id = 9;
+
+    // Run in a environment that matches the given dependencies
+    // This could result in a new environment just for this execution
+    Environment new_env = 10;
+  }
 }
 
-message EnsureEnvironmentRequest {
+message CreateEnvironmentRequest {
   Environment environment = 1;
+}
+
+message GetEnvironmentsRequest {
+  repeated string env_ids = 1;
+}
+
+message GetEnvironmentsResponse {
+  map<string, Environment> environments = 1;
 }
 
 message ListEnvironmentsRequest {

@@ -1,5 +1,6 @@
 .cache/
 .vagrant
+.DS_Store
 pgdata*
 __pycache__
 *.swp

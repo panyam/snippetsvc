@@ -14,7 +14,7 @@ TS_OUT_DIR=$(SNIPPETS_ROOT)/protos/$(TSPKGNAME)
 
 all: protos
 
-protos: printenv goprotos pyprotos
+protos: printenv goprotos pyprotos tsprotos
 
 test:
 	cd $(SNIPPETS_ROOT)/ && go test ./... -cover
@@ -40,7 +40,8 @@ pyprotos:
 
 tsprotos:
 	@echo "Generating TS bindings"
-	mkdir -p $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)
+	@rm -Rf $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)/google
+	@mkdir -p $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)
 	grpc_tools_node_protoc 									\
 		--plugin=`which protoc-gen-ts_proto` 	\
 		--ts_proto_out=$(TS_OUT_DIR)					\

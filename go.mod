@@ -29,6 +29,7 @@ require (
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/mattn/go-sqlite3 v1.14.12 // indirect
+	github.com/panyam/goutils v0.0.22 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect

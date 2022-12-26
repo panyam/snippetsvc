@@ -17,6 +17,7 @@ var (
 	log_file    = flag.String("log_file", "/tmp/harness.log", "Logfile to redirect all logs to.")
 	addr        = flag.String("control_addr", ":7000", "Address of control service.")
 	db_endpoint = flag.String("db_endpoint", "postgres://postgres:docker@localhost:5432/snippetsdb", "Endpoint of DB backing snippets shard targets.  Supported - sqlite eg (sqlite://~/.snippets/sqlite.db) or postgres eg (postgres://user:pass@localhost:5432/dbname)")
+	envdir      = flag.String("envdir", "~/.snipenvs", "Directory where all environments are created for testing and caching snippets")
 )
 
 var grpcServer *grpc.Server
@@ -31,7 +32,7 @@ func startService() (grpcServer *grpc.Server, err error) {
 	// grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 	// grpc.UnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
 	)
-	protos.RegisterSnippetServiceServer(grpcServer, service.NewSnippetService())
+	protos.RegisterSnippetServiceServer(grpcServer, service.NewSnippetService(*envdir))
 	log.Printf("Initializing Snippets Server on %s", *addr)
 	lis, err := net.Listen("tcp", *addr)
 	if err != nil {
