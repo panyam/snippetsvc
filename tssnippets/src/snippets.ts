@@ -1,14 +1,14 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 import { FieldMask } from "./google/protobuf/field_mask";
 import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "protos";
 
 export interface Environment {
-  created_at: Date | undefined;
-  updated_at: Date | undefined;
-  owner_id: string;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+  ownerId: string;
   id: string;
   /** name of the environment. */
   name: string;
@@ -21,20 +21,20 @@ export interface Environment {
 }
 
 export interface Package {
-  created_at: Date | undefined;
-  updated_at: Date | undefined;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
   name: string;
   version: string;
   language: string;
 }
 
 export interface Execution {
-  created_at: Date | undefined;
-  updated_at:
+  createdAt: Date | undefined;
+  updatedAt:
     | Date
     | undefined;
   /** Owner requesting this environment */
-  owner_id: string;
+  ownerId: string;
   /** ID of this execution */
   id: string;
   /** Code snippet being run */
@@ -44,10 +44,18 @@ export interface Execution {
    * Since this is a URI it could be a file, a url or even
    * raw contents via string:// or bin:// or json://
    */
-  output_uri: string;
+  outputUri: string;
   /** Status of the execution */
   status: string;
-  env_details?: { $case: "env_id"; env_id: string } | { $case: "new_env"; new_env: Environment };
+  /** Run against a specific environment */
+  envId?:
+    | string
+    | undefined;
+  /**
+   * Run in a environment that matches the given dependencies
+   * This could result in a new environment just for this execution
+   */
+  newEnv?: Environment | undefined;
 }
 
 export interface CreateEnvironmentRequest {
@@ -55,7 +63,7 @@ export interface CreateEnvironmentRequest {
 }
 
 export interface GetEnvironmentsRequest {
-  env_ids: string[];
+  envIds: string[];
 }
 
 export interface GetEnvironmentsResponse {
@@ -68,8 +76,8 @@ export interface GetEnvironmentsResponse_EnvironmentsEntry {
 }
 
 export interface ListEnvironmentsRequest {
-  offset?: number | undefined;
-  count?: number | undefined;
+  offset: number;
+  count: number;
 }
 
 export interface ListEnvironmentsResponse {
@@ -78,7 +86,7 @@ export interface ListEnvironmentsResponse {
 
 export interface UpdateEnvironmentRequest {
   environment: Environment | undefined;
-  update_mask: string[] | undefined;
+  updateMask: string[] | undefined;
 }
 
 export interface UpdateEnvironmentResponse {
@@ -112,27 +120,19 @@ export interface ListExecutionsResponse {
 }
 
 function createBaseEnvironment(): Environment {
-  return {
-    created_at: undefined,
-    updated_at: undefined,
-    owner_id: "",
-    id: "",
-    name: "",
-    platform: "",
-    dependencies: [],
-  };
+  return { createdAt: undefined, updatedAt: undefined, ownerId: "", id: "", name: "", platform: "", dependencies: [] };
 }
 
 export const Environment = {
   encode(message: Environment, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.created_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(10).fork()).ldelim();
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).ldelim();
     }
-    if (message.updated_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.updated_at), writer.uint32(18).fork()).ldelim();
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(18).fork()).ldelim();
     }
-    if (message.owner_id !== "") {
-      writer.uint32(26).string(message.owner_id);
+    if (message.ownerId !== "") {
+      writer.uint32(26).string(message.ownerId);
     }
     if (message.id !== "") {
       writer.uint32(34).string(message.id);
@@ -157,13 +157,13 @@ export const Environment = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.created_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.updated_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.owner_id = reader.string();
+          message.ownerId = reader.string();
           break;
         case 4:
           message.id = reader.string();
@@ -187,9 +187,9 @@ export const Environment = {
 
   fromJSON(object: any): Environment {
     return {
-      created_at: isSet(object.created_at) ? fromJsonTimestamp(object.created_at) : undefined,
-      updated_at: isSet(object.updated_at) ? fromJsonTimestamp(object.updated_at) : undefined,
-      owner_id: isSet(object.owner_id) ? String(object.owner_id) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      ownerId: isSet(object.ownerId) ? String(object.ownerId) : "",
       id: isSet(object.id) ? String(object.id) : "",
       name: isSet(object.name) ? String(object.name) : "",
       platform: isSet(object.platform) ? String(object.platform) : "",
@@ -199,9 +199,9 @@ export const Environment = {
 
   toJSON(message: Environment): unknown {
     const obj: any = {};
-    message.created_at !== undefined && (obj.created_at = message.created_at.toISOString());
-    message.updated_at !== undefined && (obj.updated_at = message.updated_at.toISOString());
-    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.createdAt !== undefined && (obj.createdAt = message.createdAt.toISOString());
+    message.updatedAt !== undefined && (obj.updatedAt = message.updatedAt.toISOString());
+    message.ownerId !== undefined && (obj.ownerId = message.ownerId);
     message.id !== undefined && (obj.id = message.id);
     message.name !== undefined && (obj.name = message.name);
     message.platform !== undefined && (obj.platform = message.platform);
@@ -215,9 +215,9 @@ export const Environment = {
 
   fromPartial<I extends Exact<DeepPartial<Environment>, I>>(object: I): Environment {
     const message = createBaseEnvironment();
-    message.created_at = object.created_at ?? undefined;
-    message.updated_at = object.updated_at ?? undefined;
-    message.owner_id = object.owner_id ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    message.ownerId = object.ownerId ?? "";
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.platform = object.platform ?? "";
@@ -227,16 +227,16 @@ export const Environment = {
 };
 
 function createBasePackage(): Package {
-  return { created_at: undefined, updated_at: undefined, name: "", version: "", language: "" };
+  return { createdAt: undefined, updatedAt: undefined, name: "", version: "", language: "" };
 }
 
 export const Package = {
   encode(message: Package, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.created_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(10).fork()).ldelim();
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).ldelim();
     }
-    if (message.updated_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.updated_at), writer.uint32(18).fork()).ldelim();
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(18).fork()).ldelim();
     }
     if (message.name !== "") {
       writer.uint32(26).string(message.name);
@@ -258,10 +258,10 @@ export const Package = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.created_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.updated_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 3:
           message.name = reader.string();
@@ -282,8 +282,8 @@ export const Package = {
 
   fromJSON(object: any): Package {
     return {
-      created_at: isSet(object.created_at) ? fromJsonTimestamp(object.created_at) : undefined,
-      updated_at: isSet(object.updated_at) ? fromJsonTimestamp(object.updated_at) : undefined,
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
       name: isSet(object.name) ? String(object.name) : "",
       version: isSet(object.version) ? String(object.version) : "",
       language: isSet(object.language) ? String(object.language) : "",
@@ -292,8 +292,8 @@ export const Package = {
 
   toJSON(message: Package): unknown {
     const obj: any = {};
-    message.created_at !== undefined && (obj.created_at = message.created_at.toISOString());
-    message.updated_at !== undefined && (obj.updated_at = message.updated_at.toISOString());
+    message.createdAt !== undefined && (obj.createdAt = message.createdAt.toISOString());
+    message.updatedAt !== undefined && (obj.updatedAt = message.updatedAt.toISOString());
     message.name !== undefined && (obj.name = message.name);
     message.version !== undefined && (obj.version = message.version);
     message.language !== undefined && (obj.language = message.language);
@@ -302,8 +302,8 @@ export const Package = {
 
   fromPartial<I extends Exact<DeepPartial<Package>, I>>(object: I): Package {
     const message = createBasePackage();
-    message.created_at = object.created_at ?? undefined;
-    message.updated_at = object.updated_at ?? undefined;
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
     message.name = object.name ?? "";
     message.version = object.version ?? "";
     message.language = object.language ?? "";
@@ -313,27 +313,28 @@ export const Package = {
 
 function createBaseExecution(): Execution {
   return {
-    created_at: undefined,
-    updated_at: undefined,
-    owner_id: "",
+    createdAt: undefined,
+    updatedAt: undefined,
+    ownerId: "",
     id: "",
     snippet: "",
-    output_uri: "",
+    outputUri: "",
     status: "",
-    env_details: undefined,
+    envId: undefined,
+    newEnv: undefined,
   };
 }
 
 export const Execution = {
   encode(message: Execution, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.created_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(10).fork()).ldelim();
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).ldelim();
     }
-    if (message.updated_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.updated_at), writer.uint32(18).fork()).ldelim();
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(18).fork()).ldelim();
     }
-    if (message.owner_id !== "") {
-      writer.uint32(34).string(message.owner_id);
+    if (message.ownerId !== "") {
+      writer.uint32(34).string(message.ownerId);
     }
     if (message.id !== "") {
       writer.uint32(42).string(message.id);
@@ -341,17 +342,17 @@ export const Execution = {
     if (message.snippet !== "") {
       writer.uint32(50).string(message.snippet);
     }
-    if (message.output_uri !== "") {
-      writer.uint32(58).string(message.output_uri);
+    if (message.outputUri !== "") {
+      writer.uint32(58).string(message.outputUri);
     }
     if (message.status !== "") {
       writer.uint32(66).string(message.status);
     }
-    if (message.env_details?.$case === "env_id") {
-      writer.uint32(74).string(message.env_details.env_id);
+    if (message.envId !== undefined) {
+      writer.uint32(74).string(message.envId);
     }
-    if (message.env_details?.$case === "new_env") {
-      Environment.encode(message.env_details.new_env, writer.uint32(82).fork()).ldelim();
+    if (message.newEnv !== undefined) {
+      Environment.encode(message.newEnv, writer.uint32(82).fork()).ldelim();
     }
     return writer;
   },
@@ -364,13 +365,13 @@ export const Execution = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.created_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.updated_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 4:
-          message.owner_id = reader.string();
+          message.ownerId = reader.string();
           break;
         case 5:
           message.id = reader.string();
@@ -379,16 +380,16 @@ export const Execution = {
           message.snippet = reader.string();
           break;
         case 7:
-          message.output_uri = reader.string();
+          message.outputUri = reader.string();
           break;
         case 8:
           message.status = reader.string();
           break;
         case 9:
-          message.env_details = { $case: "env_id", env_id: reader.string() };
+          message.envId = reader.string();
           break;
         case 10:
-          message.env_details = { $case: "new_env", new_env: Environment.decode(reader, reader.uint32()) };
+          message.newEnv = Environment.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -400,59 +401,45 @@ export const Execution = {
 
   fromJSON(object: any): Execution {
     return {
-      created_at: isSet(object.created_at) ? fromJsonTimestamp(object.created_at) : undefined,
-      updated_at: isSet(object.updated_at) ? fromJsonTimestamp(object.updated_at) : undefined,
-      owner_id: isSet(object.owner_id) ? String(object.owner_id) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      ownerId: isSet(object.ownerId) ? String(object.ownerId) : "",
       id: isSet(object.id) ? String(object.id) : "",
       snippet: isSet(object.snippet) ? String(object.snippet) : "",
-      output_uri: isSet(object.output_uri) ? String(object.output_uri) : "",
+      outputUri: isSet(object.outputUri) ? String(object.outputUri) : "",
       status: isSet(object.status) ? String(object.status) : "",
-      env_details: isSet(object.env_id)
-        ? { $case: "env_id", env_id: String(object.env_id) }
-        : isSet(object.new_env)
-        ? { $case: "new_env", new_env: Environment.fromJSON(object.new_env) }
-        : undefined,
+      envId: isSet(object.envId) ? String(object.envId) : undefined,
+      newEnv: isSet(object.newEnv) ? Environment.fromJSON(object.newEnv) : undefined,
     };
   },
 
   toJSON(message: Execution): unknown {
     const obj: any = {};
-    message.created_at !== undefined && (obj.created_at = message.created_at.toISOString());
-    message.updated_at !== undefined && (obj.updated_at = message.updated_at.toISOString());
-    message.owner_id !== undefined && (obj.owner_id = message.owner_id);
+    message.createdAt !== undefined && (obj.createdAt = message.createdAt.toISOString());
+    message.updatedAt !== undefined && (obj.updatedAt = message.updatedAt.toISOString());
+    message.ownerId !== undefined && (obj.ownerId = message.ownerId);
     message.id !== undefined && (obj.id = message.id);
     message.snippet !== undefined && (obj.snippet = message.snippet);
-    message.output_uri !== undefined && (obj.output_uri = message.output_uri);
+    message.outputUri !== undefined && (obj.outputUri = message.outputUri);
     message.status !== undefined && (obj.status = message.status);
-    message.env_details?.$case === "env_id" && (obj.env_id = message.env_details?.env_id);
-    message.env_details?.$case === "new_env" &&
-      (obj.new_env = message.env_details?.new_env ? Environment.toJSON(message.env_details?.new_env) : undefined);
+    message.envId !== undefined && (obj.envId = message.envId);
+    message.newEnv !== undefined && (obj.newEnv = message.newEnv ? Environment.toJSON(message.newEnv) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<Execution>, I>>(object: I): Execution {
     const message = createBaseExecution();
-    message.created_at = object.created_at ?? undefined;
-    message.updated_at = object.updated_at ?? undefined;
-    message.owner_id = object.owner_id ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    message.ownerId = object.ownerId ?? "";
     message.id = object.id ?? "";
     message.snippet = object.snippet ?? "";
-    message.output_uri = object.output_uri ?? "";
+    message.outputUri = object.outputUri ?? "";
     message.status = object.status ?? "";
-    if (
-      object.env_details?.$case === "env_id" &&
-      object.env_details?.env_id !== undefined &&
-      object.env_details?.env_id !== null
-    ) {
-      message.env_details = { $case: "env_id", env_id: object.env_details.env_id };
-    }
-    if (
-      object.env_details?.$case === "new_env" &&
-      object.env_details?.new_env !== undefined &&
-      object.env_details?.new_env !== null
-    ) {
-      message.env_details = { $case: "new_env", new_env: Environment.fromPartial(object.env_details.new_env) };
-    }
+    message.envId = object.envId ?? undefined;
+    message.newEnv = (object.newEnv !== undefined && object.newEnv !== null)
+      ? Environment.fromPartial(object.newEnv)
+      : undefined;
     return message;
   },
 };
@@ -508,12 +495,12 @@ export const CreateEnvironmentRequest = {
 };
 
 function createBaseGetEnvironmentsRequest(): GetEnvironmentsRequest {
-  return { env_ids: [] };
+  return { envIds: [] };
 }
 
 export const GetEnvironmentsRequest = {
   encode(message: GetEnvironmentsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.env_ids) {
+    for (const v of message.envIds) {
       writer.uint32(10).string(v!);
     }
     return writer;
@@ -527,7 +514,7 @@ export const GetEnvironmentsRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.env_ids.push(reader.string());
+          message.envIds.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -538,22 +525,22 @@ export const GetEnvironmentsRequest = {
   },
 
   fromJSON(object: any): GetEnvironmentsRequest {
-    return { env_ids: Array.isArray(object?.env_ids) ? object.env_ids.map((e: any) => String(e)) : [] };
+    return { envIds: Array.isArray(object?.envIds) ? object.envIds.map((e: any) => String(e)) : [] };
   },
 
   toJSON(message: GetEnvironmentsRequest): unknown {
     const obj: any = {};
-    if (message.env_ids) {
-      obj.env_ids = message.env_ids.map((e) => e);
+    if (message.envIds) {
+      obj.envIds = message.envIds.map((e) => e);
     } else {
-      obj.env_ids = [];
+      obj.envIds = [];
     }
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<GetEnvironmentsRequest>, I>>(object: I): GetEnvironmentsRequest {
     const message = createBaseGetEnvironmentsRequest();
-    message.env_ids = object.env_ids?.map((e) => e) || [];
+    message.envIds = object.envIds?.map((e) => e) || [];
     return message;
   },
 };
@@ -691,15 +678,15 @@ export const GetEnvironmentsResponse_EnvironmentsEntry = {
 };
 
 function createBaseListEnvironmentsRequest(): ListEnvironmentsRequest {
-  return { offset: undefined, count: undefined };
+  return { offset: 0, count: 0 };
 }
 
 export const ListEnvironmentsRequest = {
   encode(message: ListEnvironmentsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.offset !== undefined) {
+    if (message.offset !== 0) {
       writer.uint32(8).int32(message.offset);
     }
-    if (message.count !== undefined) {
+    if (message.count !== 0) {
       writer.uint32(16).int32(message.count);
     }
     return writer;
@@ -728,8 +715,8 @@ export const ListEnvironmentsRequest = {
 
   fromJSON(object: any): ListEnvironmentsRequest {
     return {
-      offset: isSet(object.offset) ? Number(object.offset) : undefined,
-      count: isSet(object.count) ? Number(object.count) : undefined,
+      offset: isSet(object.offset) ? Number(object.offset) : 0,
+      count: isSet(object.count) ? Number(object.count) : 0,
     };
   },
 
@@ -742,8 +729,8 @@ export const ListEnvironmentsRequest = {
 
   fromPartial<I extends Exact<DeepPartial<ListEnvironmentsRequest>, I>>(object: I): ListEnvironmentsRequest {
     const message = createBaseListEnvironmentsRequest();
-    message.offset = object.offset ?? undefined;
-    message.count = object.count ?? undefined;
+    message.offset = object.offset ?? 0;
+    message.count = object.count ?? 0;
     return message;
   },
 };
@@ -800,7 +787,7 @@ export const ListEnvironmentsResponse = {
 };
 
 function createBaseUpdateEnvironmentRequest(): UpdateEnvironmentRequest {
-  return { environment: undefined, update_mask: undefined };
+  return { environment: undefined, updateMask: undefined };
 }
 
 export const UpdateEnvironmentRequest = {
@@ -808,8 +795,8 @@ export const UpdateEnvironmentRequest = {
     if (message.environment !== undefined) {
       Environment.encode(message.environment, writer.uint32(10).fork()).ldelim();
     }
-    if (message.update_mask !== undefined) {
-      FieldMask.encode(FieldMask.wrap(message.update_mask), writer.uint32(18).fork()).ldelim();
+    if (message.updateMask !== undefined) {
+      FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -825,7 +812,7 @@ export const UpdateEnvironmentRequest = {
           message.environment = Environment.decode(reader, reader.uint32());
           break;
         case 2:
-          message.update_mask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
+          message.updateMask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -838,7 +825,7 @@ export const UpdateEnvironmentRequest = {
   fromJSON(object: any): UpdateEnvironmentRequest {
     return {
       environment: isSet(object.environment) ? Environment.fromJSON(object.environment) : undefined,
-      update_mask: isSet(object.update_mask) ? FieldMask.unwrap(FieldMask.fromJSON(object.update_mask)) : undefined,
+      updateMask: isSet(object.updateMask) ? FieldMask.unwrap(FieldMask.fromJSON(object.updateMask)) : undefined,
     };
   },
 
@@ -846,7 +833,7 @@ export const UpdateEnvironmentRequest = {
     const obj: any = {};
     message.environment !== undefined &&
       (obj.environment = message.environment ? Environment.toJSON(message.environment) : undefined);
-    message.update_mask !== undefined && (obj.update_mask = FieldMask.toJSON(FieldMask.wrap(message.update_mask)));
+    message.updateMask !== undefined && (obj.updateMask = FieldMask.toJSON(FieldMask.wrap(message.updateMask)));
     return obj;
   },
 
@@ -855,7 +842,7 @@ export const UpdateEnvironmentRequest = {
     message.environment = (object.environment !== undefined && object.environment !== null)
       ? Environment.fromPartial(object.environment)
       : undefined;
-    message.update_mask = object.update_mask ?? undefined;
+    message.updateMask = object.updateMask ?? undefined;
     return message;
   },
 };
@@ -1254,91 +1241,97 @@ export const ListExecutionsResponse = {
  * generator can submit snippets to be excuted with different versions of code and ensure
  * snippets are upto date with the versions of software being documented.
  */
-export type SnippetServiceDefinition = typeof SnippetServiceDefinition;
-export const SnippetServiceDefinition = {
-  name: "SnippetService",
-  fullName: "protos.SnippetService",
-  methods: {
-    /** Creates a new environment for a snippet. */
-    createEnvironment: {
-      name: "CreateEnvironment",
-      requestType: CreateEnvironmentRequest,
-      requestStream: false,
-      responseType: Environment,
-      responseStream: false,
-      options: {},
-    },
-    /** Gets information about the given environments. */
-    getEnvironments: {
-      name: "GetEnvironments",
-      requestType: GetEnvironmentsRequest,
-      requestStream: false,
-      responseType: GetEnvironmentsResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Lists all environments. */
-    listEnvironments: {
-      name: "ListEnvironments",
-      requestType: ListEnvironmentsRequest,
-      requestStream: false,
-      responseType: ListEnvironmentsResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Updates all environments. */
-    updateEnvironment: {
-      name: "UpdateEnvironment",
-      requestType: UpdateEnvironmentRequest,
-      requestStream: false,
-      responseType: UpdateEnvironmentResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Cancel/Deletes environments. */
-    deleteEnvironment: {
-      name: "DeleteEnvironment",
-      requestType: DeleteEnvironmentRequest,
-      requestStream: false,
-      responseType: DeleteEnvironmentResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Creates a new execution for a snippet. */
-    createExecution: {
-      name: "CreateExecution",
-      requestType: CreateExecutionRequest,
-      requestStream: false,
-      responseType: CreateExecutionResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Lists all executions. */
-    listExecutions: {
-      name: "ListExecutions",
-      requestType: ListExecutionsRequest,
-      requestStream: false,
-      responseType: ListExecutionsResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Cancel/Deletes executions. */
-    deleteExecutions: {
-      name: "DeleteExecutions",
-      requestType: DeleteExecutionsRequest,
-      requestStream: false,
-      responseType: DeleteExecutionsResponse,
-      responseStream: false,
-      options: {},
-    },
-  },
-} as const;
+export interface SnippetService {
+  /** Creates a new environment for a snippet. */
+  CreateEnvironment(request: CreateEnvironmentRequest): Promise<Environment>;
+  /** Gets information about the given environments. */
+  GetEnvironments(request: GetEnvironmentsRequest): Promise<GetEnvironmentsResponse>;
+  /** Lists all environments. */
+  ListEnvironments(request: ListEnvironmentsRequest): Promise<ListEnvironmentsResponse>;
+  /** Updates all environments. */
+  UpdateEnvironment(request: UpdateEnvironmentRequest): Promise<UpdateEnvironmentResponse>;
+  /** Cancel/Deletes environments. */
+  DeleteEnvironment(request: DeleteEnvironmentRequest): Promise<DeleteEnvironmentResponse>;
+  /** Creates a new execution for a snippet. */
+  CreateExecution(request: CreateExecutionRequest): Promise<CreateExecutionResponse>;
+  /** Lists all executions. */
+  ListExecutions(request: ListExecutionsRequest): Promise<ListExecutionsResponse>;
+  /** Cancel/Deletes executions. */
+  DeleteExecutions(request: DeleteExecutionsRequest): Promise<DeleteExecutionsResponse>;
+}
+
+export class SnippetServiceClientImpl implements SnippetService {
+  private readonly rpc: Rpc;
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: { service?: string }) {
+    this.service = opts?.service || "protos.SnippetService";
+    this.rpc = rpc;
+    this.CreateEnvironment = this.CreateEnvironment.bind(this);
+    this.GetEnvironments = this.GetEnvironments.bind(this);
+    this.ListEnvironments = this.ListEnvironments.bind(this);
+    this.UpdateEnvironment = this.UpdateEnvironment.bind(this);
+    this.DeleteEnvironment = this.DeleteEnvironment.bind(this);
+    this.CreateExecution = this.CreateExecution.bind(this);
+    this.ListExecutions = this.ListExecutions.bind(this);
+    this.DeleteExecutions = this.DeleteExecutions.bind(this);
+  }
+  CreateEnvironment(request: CreateEnvironmentRequest): Promise<Environment> {
+    const data = CreateEnvironmentRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "CreateEnvironment", data);
+    return promise.then((data) => Environment.decode(new _m0.Reader(data)));
+  }
+
+  GetEnvironments(request: GetEnvironmentsRequest): Promise<GetEnvironmentsResponse> {
+    const data = GetEnvironmentsRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetEnvironments", data);
+    return promise.then((data) => GetEnvironmentsResponse.decode(new _m0.Reader(data)));
+  }
+
+  ListEnvironments(request: ListEnvironmentsRequest): Promise<ListEnvironmentsResponse> {
+    const data = ListEnvironmentsRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "ListEnvironments", data);
+    return promise.then((data) => ListEnvironmentsResponse.decode(new _m0.Reader(data)));
+  }
+
+  UpdateEnvironment(request: UpdateEnvironmentRequest): Promise<UpdateEnvironmentResponse> {
+    const data = UpdateEnvironmentRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "UpdateEnvironment", data);
+    return promise.then((data) => UpdateEnvironmentResponse.decode(new _m0.Reader(data)));
+  }
+
+  DeleteEnvironment(request: DeleteEnvironmentRequest): Promise<DeleteEnvironmentResponse> {
+    const data = DeleteEnvironmentRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "DeleteEnvironment", data);
+    return promise.then((data) => DeleteEnvironmentResponse.decode(new _m0.Reader(data)));
+  }
+
+  CreateExecution(request: CreateExecutionRequest): Promise<CreateExecutionResponse> {
+    const data = CreateExecutionRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "CreateExecution", data);
+    return promise.then((data) => CreateExecutionResponse.decode(new _m0.Reader(data)));
+  }
+
+  ListExecutions(request: ListExecutionsRequest): Promise<ListExecutionsResponse> {
+    const data = ListExecutionsRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "ListExecutions", data);
+    return promise.then((data) => ListExecutionsResponse.decode(new _m0.Reader(data)));
+  }
+
+  DeleteExecutions(request: DeleteExecutionsRequest): Promise<DeleteExecutionsResponse> {
+    const data = DeleteExecutionsRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "DeleteExecutions", data);
+    return promise.then((data) => DeleteExecutionsResponse.decode(new _m0.Reader(data)));
+  }
+}
+
+interface Rpc {
+  request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+}
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
   : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 

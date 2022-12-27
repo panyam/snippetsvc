@@ -128,8 +128,8 @@ message GetEnvironmentsResponse {
 }
 
 message ListEnvironmentsRequest {
-  optional int32 offset = 1;
-  optional int32 count = 2;
+  int32 offset = 1;
+  int32 count = 2;
 }
 
 message ListEnvironmentsResponse {

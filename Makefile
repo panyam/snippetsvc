@@ -42,15 +42,27 @@ tsprotos:
 	@echo "Generating TS bindings"
 	@rm -Rf $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)/src/google
 	@mkdir -p $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)
-	grpc_tools_node_protoc 									\
-		--plugin=`which protoc-gen-ts_proto` 	\
+	grpc_tools_node_protoc	\
+		--js_out=import_style=commonjs,binary:$(TS_OUT_DIR)							\
+		--grpc_out=grpc_js:$(TS_OUT_DIR)																\
+		--plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` 	\
+		-I $(SNIPPETS_ROOT)/protos $(SNIPPETS_ROOT)/protos/*.proto
+	grpc_tools_node_protoc	\
+		--plugin=protoc-gen-ts=`which protoc-gen-ts` 	\
+		--ts_out=grpc_js:$(TS_OUT_DIR)											\
 		--ts_proto_out=$(TS_OUT_DIR)					\
-		--ts_proto_opt=outputServices=generic-definitions,outputClientImpl=false,oneof=unions,snakeToCamel=false,esModuleInterop=true \
-		--proto_path=$(SNIPPETS_ROOT)/protos	\
-		$(SNIPPETS_ROOT)/protos/snippets.proto
+		-I $(SNIPPETS_ROOT)/protos $(SNIPPETS_ROOT)/protos/*.proto
 	@mv $(TS_OUT_DIR)/* $(SNIPPETS_ROOT)/$(TSPKGNAME)/src
 	@echo "Cleaning up files..."
-	rm -Rf $(TS_OUT_DIR)
+	#rm -Rf $(TS_OUT_DIR)
+
+
+	#grpc_tools_node_protoc 									\
+		--plugin=protoc-gen-ts=`which protoc-gen-ts_proto` 	\
+		--ts_proto_out=$(TS_OUT_DIR)					\
+		--ts_proto_opt=outputServices=generic-definitions,outputClientImpl=true,oneof=unions,snakeToCamel=true,esModuleInterop=true \
+		--proto_path=$(SNIPPETS_ROOT)/protos	\
+		$(SNIPPETS_ROOT)/protos/snippets.proto
 
 printenv:
 	@echo MAKEFILE_DIR=$(MAKEFILE_DIR)
