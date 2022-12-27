@@ -40,7 +40,7 @@ pyprotos:
 
 tsprotos:
 	@echo "Generating TS bindings"
-	@rm -Rf $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)/google
+	@rm -Rf $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)/src/google
 	@mkdir -p $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)
 	grpc_tools_node_protoc 									\
 		--plugin=`which protoc-gen-ts_proto` 	\
@@ -48,7 +48,7 @@ tsprotos:
 		--ts_proto_opt=outputServices=generic-definitions,outputClientImpl=false,oneof=unions,snakeToCamel=false,esModuleInterop=true \
 		--proto_path=$(SNIPPETS_ROOT)/protos	\
 		$(SNIPPETS_ROOT)/protos/snippets.proto
-	@mv $(TS_OUT_DIR)/* $(SNIPPETS_ROOT)/$(TSPKGNAME)/
+	@mv $(TS_OUT_DIR)/* $(SNIPPETS_ROOT)/$(TSPKGNAME)/src
 	@echo "Cleaning up files..."
 	rm -Rf $(TS_OUT_DIR)
 

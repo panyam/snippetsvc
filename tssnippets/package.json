@@ -1,15 +1,53 @@
 {
   "name": "snippetsvc",
   "version": "0.0.3",
+  "author": "Sriram Panyam",
   "description": "TS client bindings for Snippets service",
-  "main": "dist/index.js",
-  "scripts": {
-    "test": "npm test"
-  },
+  "license": "ISC",
+  "types": "lib/cjs/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "files": [
+    "lib/"
+  ],
   "repository": {
     "type": "git",
     "url": "github.com/panyam/snippetsvc/tssnippets"
   },
-  "author": "Sriram Panyam",
-  "license": "ISC"
+  "keywords": [],
+  "bugs": {
+    "url": "github.com/panyam/snippetsvc/issues"
+  },
+  "pre-commit": [
+    "precommit-msg",
+    "clean",
+    "lintfix",
+    "test"
+  ],
+  "scripts": {
+    "clean": "rm -Rf lib && jest --clearCache",
+    "build": "npm run  clean && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "test": "npm test",
+    "lint": "eslint './src' --quiet --ext .ts --resolve-plugins-relative-to .",
+    "lintfix": "eslint 'src/**/*.ts' --quiet --fix --resolve-plugins-relative-to .",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "precommit-msg": "echo 'Pre-commit checks...' && exit 0",
+    "prepare": "npm run build",
+    "prepublishOnly": "echo prepublishOnly...",
+    "preversion": "npm run build && npm run lintfix",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "devDependencies": {
+    "jest": "^29.3.1"
+  },
+  "dependencies": {
+    "long": "^5.2.1",
+    "nice-grpc": "^2.0.1",
+    "protobufjs": "^7.1.2"
+  }
 }
