@@ -1,13 +1,23 @@
 /* eslint-disable */
-import * as _m0 from "protobufjs/minimal";
+import {
+  CallOptions,
+  ChannelCredentials,
+  Client,
+  ClientOptions,
+  ClientUnaryCall,
+  handleUnaryCall,
+  makeGenericClientConstructor,
+  Metadata,
+  ServiceError,
+  UntypedServiceImplementation,
+} from "@grpc/grpc-js";
+import _m0 from "protobufjs/minimal";
 import { FieldMask } from "./google/protobuf/field_mask";
 import { Timestamp } from "./google/protobuf/timestamp";
 
-export const protobufPackage = "protos";
-
 export interface Environment {
-  createdAt: Date | undefined;
-  updatedAt: Date | undefined;
+  createdAt?: Date;
+  updatedAt?: Date;
   ownerId: string;
   id: string;
   /** name of the environment. */
@@ -21,18 +31,16 @@ export interface Environment {
 }
 
 export interface Package {
-  createdAt: Date | undefined;
-  updatedAt: Date | undefined;
+  createdAt?: Date;
+  updatedAt?: Date;
   name: string;
   version: string;
   language: string;
 }
 
 export interface Execution {
-  createdAt: Date | undefined;
-  updatedAt:
-    | Date
-    | undefined;
+  createdAt?: Date;
+  updatedAt?: Date;
   /** Owner requesting this environment */
   ownerId: string;
   /** ID of this execution */
@@ -59,7 +67,7 @@ export interface Execution {
 }
 
 export interface CreateEnvironmentRequest {
-  environment: Environment | undefined;
+  environment?: Environment;
 }
 
 export interface GetEnvironmentsRequest {
@@ -72,7 +80,7 @@ export interface GetEnvironmentsResponse {
 
 export interface GetEnvironmentsResponse_EnvironmentsEntry {
   key: string;
-  value: Environment | undefined;
+  value?: Environment;
 }
 
 export interface ListEnvironmentsRequest {
@@ -85,8 +93,8 @@ export interface ListEnvironmentsResponse {
 }
 
 export interface UpdateEnvironmentRequest {
-  environment: Environment | undefined;
-  updateMask: string[] | undefined;
+  environment?: Environment;
+  updateMask?: string[];
 }
 
 export interface UpdateEnvironmentResponse {
@@ -1241,102 +1249,261 @@ export const ListExecutionsResponse = {
  * generator can submit snippets to be excuted with different versions of code and ensure
  * snippets are upto date with the versions of software being documented.
  */
-export interface SnippetService {
+export type SnippetServiceService = typeof SnippetServiceService;
+export const SnippetServiceService = {
   /** Creates a new environment for a snippet. */
-  CreateEnvironment(request: CreateEnvironmentRequest): Promise<Environment>;
+  createEnvironment: {
+    path: "/protos.SnippetService/CreateEnvironment",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: CreateEnvironmentRequest) => Buffer.from(CreateEnvironmentRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateEnvironmentRequest.decode(value),
+    responseSerialize: (value: Environment) => Buffer.from(Environment.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Environment.decode(value),
+  },
   /** Gets information about the given environments. */
-  GetEnvironments(request: GetEnvironmentsRequest): Promise<GetEnvironmentsResponse>;
+  getEnvironments: {
+    path: "/protos.SnippetService/GetEnvironments",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetEnvironmentsRequest) => Buffer.from(GetEnvironmentsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetEnvironmentsRequest.decode(value),
+    responseSerialize: (value: GetEnvironmentsResponse) => Buffer.from(GetEnvironmentsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetEnvironmentsResponse.decode(value),
+  },
   /** Lists all environments. */
-  ListEnvironments(request: ListEnvironmentsRequest): Promise<ListEnvironmentsResponse>;
+  listEnvironments: {
+    path: "/protos.SnippetService/ListEnvironments",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ListEnvironmentsRequest) => Buffer.from(ListEnvironmentsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ListEnvironmentsRequest.decode(value),
+    responseSerialize: (value: ListEnvironmentsResponse) =>
+      Buffer.from(ListEnvironmentsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ListEnvironmentsResponse.decode(value),
+  },
   /** Updates all environments. */
-  UpdateEnvironment(request: UpdateEnvironmentRequest): Promise<UpdateEnvironmentResponse>;
+  updateEnvironment: {
+    path: "/protos.SnippetService/UpdateEnvironment",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: UpdateEnvironmentRequest) => Buffer.from(UpdateEnvironmentRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UpdateEnvironmentRequest.decode(value),
+    responseSerialize: (value: UpdateEnvironmentResponse) =>
+      Buffer.from(UpdateEnvironmentResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => UpdateEnvironmentResponse.decode(value),
+  },
   /** Cancel/Deletes environments. */
-  DeleteEnvironment(request: DeleteEnvironmentRequest): Promise<DeleteEnvironmentResponse>;
+  deleteEnvironment: {
+    path: "/protos.SnippetService/DeleteEnvironment",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: DeleteEnvironmentRequest) => Buffer.from(DeleteEnvironmentRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => DeleteEnvironmentRequest.decode(value),
+    responseSerialize: (value: DeleteEnvironmentResponse) =>
+      Buffer.from(DeleteEnvironmentResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => DeleteEnvironmentResponse.decode(value),
+  },
   /** Creates a new execution for a snippet. */
-  CreateExecution(request: CreateExecutionRequest): Promise<CreateExecutionResponse>;
+  createExecution: {
+    path: "/protos.SnippetService/CreateExecution",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: CreateExecutionRequest) => Buffer.from(CreateExecutionRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateExecutionRequest.decode(value),
+    responseSerialize: (value: CreateExecutionResponse) => Buffer.from(CreateExecutionResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => CreateExecutionResponse.decode(value),
+  },
   /** Lists all executions. */
-  ListExecutions(request: ListExecutionsRequest): Promise<ListExecutionsResponse>;
+  listExecutions: {
+    path: "/protos.SnippetService/ListExecutions",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: ListExecutionsRequest) => Buffer.from(ListExecutionsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => ListExecutionsRequest.decode(value),
+    responseSerialize: (value: ListExecutionsResponse) => Buffer.from(ListExecutionsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => ListExecutionsResponse.decode(value),
+  },
   /** Cancel/Deletes executions. */
-  DeleteExecutions(request: DeleteExecutionsRequest): Promise<DeleteExecutionsResponse>;
+  deleteExecutions: {
+    path: "/protos.SnippetService/DeleteExecutions",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: DeleteExecutionsRequest) => Buffer.from(DeleteExecutionsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => DeleteExecutionsRequest.decode(value),
+    responseSerialize: (value: DeleteExecutionsResponse) =>
+      Buffer.from(DeleteExecutionsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => DeleteExecutionsResponse.decode(value),
+  },
+} as const;
+
+export interface SnippetServiceServer extends UntypedServiceImplementation {
+  /** Creates a new environment for a snippet. */
+  createEnvironment: handleUnaryCall<CreateEnvironmentRequest, Environment>;
+  /** Gets information about the given environments. */
+  getEnvironments: handleUnaryCall<GetEnvironmentsRequest, GetEnvironmentsResponse>;
+  /** Lists all environments. */
+  listEnvironments: handleUnaryCall<ListEnvironmentsRequest, ListEnvironmentsResponse>;
+  /** Updates all environments. */
+  updateEnvironment: handleUnaryCall<UpdateEnvironmentRequest, UpdateEnvironmentResponse>;
+  /** Cancel/Deletes environments. */
+  deleteEnvironment: handleUnaryCall<DeleteEnvironmentRequest, DeleteEnvironmentResponse>;
+  /** Creates a new execution for a snippet. */
+  createExecution: handleUnaryCall<CreateExecutionRequest, CreateExecutionResponse>;
+  /** Lists all executions. */
+  listExecutions: handleUnaryCall<ListExecutionsRequest, ListExecutionsResponse>;
+  /** Cancel/Deletes executions. */
+  deleteExecutions: handleUnaryCall<DeleteExecutionsRequest, DeleteExecutionsResponse>;
 }
 
-export class SnippetServiceClientImpl implements SnippetService {
-  private readonly rpc: Rpc;
-  private readonly service: string;
-  constructor(rpc: Rpc, opts?: { service?: string }) {
-    this.service = opts?.service || "protos.SnippetService";
-    this.rpc = rpc;
-    this.CreateEnvironment = this.CreateEnvironment.bind(this);
-    this.GetEnvironments = this.GetEnvironments.bind(this);
-    this.ListEnvironments = this.ListEnvironments.bind(this);
-    this.UpdateEnvironment = this.UpdateEnvironment.bind(this);
-    this.DeleteEnvironment = this.DeleteEnvironment.bind(this);
-    this.CreateExecution = this.CreateExecution.bind(this);
-    this.ListExecutions = this.ListExecutions.bind(this);
-    this.DeleteExecutions = this.DeleteExecutions.bind(this);
-  }
-  CreateEnvironment(request: CreateEnvironmentRequest): Promise<Environment> {
-    const data = CreateEnvironmentRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "CreateEnvironment", data);
-    return promise.then((data) => Environment.decode(new _m0.Reader(data)));
-  }
-
-  GetEnvironments(request: GetEnvironmentsRequest): Promise<GetEnvironmentsResponse> {
-    const data = GetEnvironmentsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "GetEnvironments", data);
-    return promise.then((data) => GetEnvironmentsResponse.decode(new _m0.Reader(data)));
-  }
-
-  ListEnvironments(request: ListEnvironmentsRequest): Promise<ListEnvironmentsResponse> {
-    const data = ListEnvironmentsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListEnvironments", data);
-    return promise.then((data) => ListEnvironmentsResponse.decode(new _m0.Reader(data)));
-  }
-
-  UpdateEnvironment(request: UpdateEnvironmentRequest): Promise<UpdateEnvironmentResponse> {
-    const data = UpdateEnvironmentRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "UpdateEnvironment", data);
-    return promise.then((data) => UpdateEnvironmentResponse.decode(new _m0.Reader(data)));
-  }
-
-  DeleteEnvironment(request: DeleteEnvironmentRequest): Promise<DeleteEnvironmentResponse> {
-    const data = DeleteEnvironmentRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "DeleteEnvironment", data);
-    return promise.then((data) => DeleteEnvironmentResponse.decode(new _m0.Reader(data)));
-  }
-
-  CreateExecution(request: CreateExecutionRequest): Promise<CreateExecutionResponse> {
-    const data = CreateExecutionRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "CreateExecution", data);
-    return promise.then((data) => CreateExecutionResponse.decode(new _m0.Reader(data)));
-  }
-
-  ListExecutions(request: ListExecutionsRequest): Promise<ListExecutionsResponse> {
-    const data = ListExecutionsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListExecutions", data);
-    return promise.then((data) => ListExecutionsResponse.decode(new _m0.Reader(data)));
-  }
-
-  DeleteExecutions(request: DeleteExecutionsRequest): Promise<DeleteExecutionsResponse> {
-    const data = DeleteExecutionsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "DeleteExecutions", data);
-    return promise.then((data) => DeleteExecutionsResponse.decode(new _m0.Reader(data)));
-  }
+export interface SnippetServiceClient extends Client {
+  /** Creates a new environment for a snippet. */
+  createEnvironment(
+    request: CreateEnvironmentRequest,
+    callback: (error: ServiceError | null, response: Environment) => void,
+  ): ClientUnaryCall;
+  createEnvironment(
+    request: CreateEnvironmentRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Environment) => void,
+  ): ClientUnaryCall;
+  createEnvironment(
+    request: CreateEnvironmentRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Environment) => void,
+  ): ClientUnaryCall;
+  /** Gets information about the given environments. */
+  getEnvironments(
+    request: GetEnvironmentsRequest,
+    callback: (error: ServiceError | null, response: GetEnvironmentsResponse) => void,
+  ): ClientUnaryCall;
+  getEnvironments(
+    request: GetEnvironmentsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetEnvironmentsResponse) => void,
+  ): ClientUnaryCall;
+  getEnvironments(
+    request: GetEnvironmentsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetEnvironmentsResponse) => void,
+  ): ClientUnaryCall;
+  /** Lists all environments. */
+  listEnvironments(
+    request: ListEnvironmentsRequest,
+    callback: (error: ServiceError | null, response: ListEnvironmentsResponse) => void,
+  ): ClientUnaryCall;
+  listEnvironments(
+    request: ListEnvironmentsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListEnvironmentsResponse) => void,
+  ): ClientUnaryCall;
+  listEnvironments(
+    request: ListEnvironmentsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListEnvironmentsResponse) => void,
+  ): ClientUnaryCall;
+  /** Updates all environments. */
+  updateEnvironment(
+    request: UpdateEnvironmentRequest,
+    callback: (error: ServiceError | null, response: UpdateEnvironmentResponse) => void,
+  ): ClientUnaryCall;
+  updateEnvironment(
+    request: UpdateEnvironmentRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: UpdateEnvironmentResponse) => void,
+  ): ClientUnaryCall;
+  updateEnvironment(
+    request: UpdateEnvironmentRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: UpdateEnvironmentResponse) => void,
+  ): ClientUnaryCall;
+  /** Cancel/Deletes environments. */
+  deleteEnvironment(
+    request: DeleteEnvironmentRequest,
+    callback: (error: ServiceError | null, response: DeleteEnvironmentResponse) => void,
+  ): ClientUnaryCall;
+  deleteEnvironment(
+    request: DeleteEnvironmentRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: DeleteEnvironmentResponse) => void,
+  ): ClientUnaryCall;
+  deleteEnvironment(
+    request: DeleteEnvironmentRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: DeleteEnvironmentResponse) => void,
+  ): ClientUnaryCall;
+  /** Creates a new execution for a snippet. */
+  createExecution(
+    request: CreateExecutionRequest,
+    callback: (error: ServiceError | null, response: CreateExecutionResponse) => void,
+  ): ClientUnaryCall;
+  createExecution(
+    request: CreateExecutionRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: CreateExecutionResponse) => void,
+  ): ClientUnaryCall;
+  createExecution(
+    request: CreateExecutionRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: CreateExecutionResponse) => void,
+  ): ClientUnaryCall;
+  /** Lists all executions. */
+  listExecutions(
+    request: ListExecutionsRequest,
+    callback: (error: ServiceError | null, response: ListExecutionsResponse) => void,
+  ): ClientUnaryCall;
+  listExecutions(
+    request: ListExecutionsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListExecutionsResponse) => void,
+  ): ClientUnaryCall;
+  listExecutions(
+    request: ListExecutionsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListExecutionsResponse) => void,
+  ): ClientUnaryCall;
+  /** Cancel/Deletes executions. */
+  deleteExecutions(
+    request: DeleteExecutionsRequest,
+    callback: (error: ServiceError | null, response: DeleteExecutionsResponse) => void,
+  ): ClientUnaryCall;
+  deleteExecutions(
+    request: DeleteExecutionsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: DeleteExecutionsResponse) => void,
+  ): ClientUnaryCall;
+  deleteExecutions(
+    request: DeleteExecutionsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: DeleteExecutionsResponse) => void,
+  ): ClientUnaryCall;
 }
 
-interface Rpc {
-  request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
-}
+export const SnippetServiceClient = makeGenericClientConstructor(
+  SnippetServiceService,
+  "protos.SnippetService",
+) as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): SnippetServiceClient;
+  service: typeof SnippetServiceService;
+};
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
+type DeepPartial<T> = T extends Builtin ? T
   : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
+type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function toTimestamp(date: Date): Timestamp {

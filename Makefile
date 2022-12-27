@@ -8,8 +8,9 @@ PATH:=$(PATH):$(GOROOT):$(GOPATH):$(GOBIN)
 MAKEFILE_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 SNIPPETS_ROOT=$(MAKEFILE_DIR)
 # Generate the python client too
-PY_OUT_DIR=$(SNIPPETS_ROOT)/protos/$(PYPKGNAME)
-TS_OUT_DIR=$(SNIPPETS_ROOT)/protos/$(TSPKGNAME)
+PROTO_DIR=$(SNIPPETS_ROOT)/protos
+PY_OUT_DIR=$(PROTO_DIR)/$(PYPKGNAME)
+TS_OUT_DIR=$(PROTO_DIR)/$(TSPKGNAME)
 
 
 all: protos
@@ -39,6 +40,18 @@ pyprotos:
 	rm -Rf $(PY_OUT_DIR)
 
 tsprotos:
+	@echo "Generating TS bindings"
+	@rm -Rf $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)/src/google
+	@mkdir -p $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)
+	protoc \
+		--plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` 	\
+	  --ts_proto_opt=outputServices=grpc-js,env=node,useOptionals=messages,exportCommonSymbols=false,esModuleInterop=true	\
+		--ts_proto_out=$(TS_OUT_DIR)					\
+  	--proto_path $(PROTO_DIR) $(PROTO_DIR)/*.proto
+	@mv $(TS_OUT_DIR)/* $(SNIPPETS_ROOT)/$(TSPKGNAME)/src
+	@echo "Cleaning up files..."
+
+tsprotos2:
 	@echo "Generating TS bindings"
 	@rm -Rf $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)/src/google
 	@mkdir -p $(TS_OUT_DIR) $(SNIPPETS_ROOT)/$(TSPKGNAME)

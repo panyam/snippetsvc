@@ -1,6 +1,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
+
 option go_package = "github.com/panyam/snippets/protos";
 package protos;
 
@@ -40,7 +41,14 @@ service SnippetService {
   /**
    * Creates a new execution for a snippet.
    */
-  rpc CreateExecution(CreateExecutionRequest) returns (CreateExecutionResponse) {}
+  rpc CreateExecution(CreateExecutionRequest) returns (CreateExecutionResponse) {
+/*
+    option (google.api.http) = {
+      post: "/v1/executions"
+      body: "*"
+    };
+*/
+  }
 
   /**
    * Lists all executions.

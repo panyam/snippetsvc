@@ -268,7 +268,12 @@ createExecution: {
     responseSerialize: serialize_protos_CreateExecutionResponse,
     responseDeserialize: deserialize_protos_CreateExecutionResponse,
   },
-  // *
+  //
+// option (google.api.http) = {
+// post: "/v1/executions"
+// body: "*"
+// };
+// *
 // Lists all executions.
 listExecutions: {
     path: '/protos.SnippetService/ListExecutions',
