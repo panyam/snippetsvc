@@ -1,6 +1,6 @@
 {
   "name": "remark-snippets",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Sriram Panyam",
   "description": "A snippet plugin for MDX where snippets are executed and their outputs caputred allowing for upto date documentation pages.",
   "license": "ISC",
@@ -28,7 +28,7 @@
     "prepublishOnly": "echo prepublishOnly...",
     "preversion": "npm run build && npm run lintfix",
     "version": "git add -A .",
-    "postversion": "git push && git push --tags"
+    "postversion": "git commit -anm 'Updated patch version' && git push && git push --tags"
   },
   "repository": {
     "type": "git",
