@@ -102,27 +102,29 @@ message Execution {
   // Code snippet being run
   repeated string code_blocks = 6;
 
-  // Output result of this execution
-  // Since this is a URI it could be a file, a url or even
-  // raw contents via string:// or bin:// or json://
-  repeated ExecResult exec_results = 7;
+  // stdoutput of the code blocks.  
+  repeated string block_outputs = 7;
+
+  // Error output.  Note only 1 is recorded here and executions stops
+  // at the first error encountered by the commands.
+  string error_output = 8;
 
   // Status of the execution
-  string status = 8;
+  string status = 9;
 
   /**
    * The environment in which this execution is to be run
    */
   oneof env_details {
     // Run against a specific environment
-    string env_id = 9;
+    string env_id = 10;
 
     // Env points to a pre-install environment directory
-    string env_dir = 10;
+    string env_dir = 11;
 
     // Run in a environment that matches the given dependencies
     // This could result in a new environment just for this execution
-    Environment new_env = 11;
+    Environment new_env = 12;
   }
 }
 
@@ -177,13 +179,6 @@ message CreateExecutionRequest {
 
   // Code snippet being run
   repeated string code_blocks = 3;
-
-  // stdoutput of the code blocks.  
-  repeated string block_outputs = 4;
-
-  // Error output.  Note only 1 is recorded here and executions stops
-  // at the first error encountered by the commands.
-  string error_output = 5;
 
   oneof env_details {
     // Run against a specific environment
