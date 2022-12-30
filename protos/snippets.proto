@@ -133,7 +133,6 @@ message ExecResult {
 }
 
 message CreateEnvironmentRequest {
-  Environment environment = 1;
 }
 
 message GetEnvironmentsRequest {
@@ -169,9 +168,30 @@ message DeleteEnvironmentResponse {
 }
 
 message CreateExecutionRequest {
+  // Owner requesting this environment
+  string owner_id = 1;
+
+  // ID of the snippet
+  string snippet_id = 2;
+
+  // Code snippet being run
+  repeated string code_blocks = 3;
+
+  oneof env_details {
+    // Run against a specific environment
+    string env_id = 4;
+
+    // Env points to a pre-install environment directory
+    string env_dir = 5;
+
+    // Run in a environment that matches the given dependencies
+    // This could result in a new environment just for this execution
+    Environment new_env = 6;
+  }
 }
 
 message CreateExecutionResponse {
+  Execution execution = 1;
 }
 
 message DeleteExecutionsRequest {

@@ -192,7 +192,14 @@ export class Snippet {
     const resp = await snippets.call<
       snippets.CreateExecutionRequest,
       snippets.CreateExecutionResponse
-    >(snippetsClient, 'createExecution', {});
+    >(snippetsClient, 'createExecution', {
+      owner_id: 1,
+      snippet_id: snippetId,
+      code_blocks: codeBlocks,
+      env_details: {
+        env_dir: '/tmp/enva',
+      },
+    });
 
     const out = [] as any[];
     out.push({
