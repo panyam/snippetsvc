@@ -100,12 +100,12 @@ message Execution {
   string id = 5;
 
   // Code snippet being run
-  string snippet = 6;
+  repeated string code_blocks = 6;
 
   // Output result of this execution
   // Since this is a URI it could be a file, a url or even
   // raw contents via string:// or bin:// or json://
-  string output_uri = 7;
+  repeated ExecResult exec_results = 7;
 
   // Status of the execution
   string status = 8;
@@ -117,10 +117,19 @@ message Execution {
     // Run against a specific environment
     string env_id = 9;
 
+    // Env points to a pre-install environment directory
+    string env_dir = 10;
+
     // Run in a environment that matches the given dependencies
     // This could result in a new environment just for this execution
-    Environment new_env = 10;
+    Environment new_env = 11;
   }
+}
+
+message ExecResult {
+  string status = 1;
+  string error = 2;
+  string output = 3;
 }
 
 message CreateEnvironmentRequest {

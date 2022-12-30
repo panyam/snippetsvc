@@ -6,12 +6,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	// "fmt"
 	// gut "github.com/panyam/goutils/utils"
 	"github.com/panyam/snippets/protos"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	// "log"
 	// "sort"
 	// "time"
 )
@@ -48,6 +46,7 @@ func (s *SnippetService) CreateEnvironment(ctx context.Context, request *protos.
 
 	ownerdir := path.Join(s.EnvDir, env.OwnerId)
 	envdir := path.Join(ownerdir, "envs")
+	os.MkdirAll(envdir, 0777)
 	newenvdir, err := ioutil.TempDir(envdir, "env")
 	if err != nil {
 		return nil, err
@@ -57,5 +56,17 @@ func (s *SnippetService) CreateEnvironment(ctx context.Context, request *protos.
 }
 
 func (s *SnippetService) CreateExecution(ctx context.Context, request *protos.CreateExecutionRequest) (resp *protos.CreateExecutionResponse, err error) {
+	/*
+		switch op := request.EnvDetails.(type) {
+		case *string:
+			envdir := fmt.Sprintf
+			break
+		case *protos.Environment:
+			break
+		default:
+			fmt.Println("Invalid env_details field")
+			break
+		}
+	*/
 	return
 }

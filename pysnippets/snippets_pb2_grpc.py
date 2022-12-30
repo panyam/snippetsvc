@@ -114,6 +114,11 @@ class SnippetServiceServicer(object):
     def CreateExecution(self, request, context):
         """*
         Creates a new execution for a snippet.
+
+        option (google.api.http) = {
+        post: "/v1/executions"
+        body: "*"
+        };
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')

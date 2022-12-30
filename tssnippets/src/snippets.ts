@@ -46,17 +46,21 @@ export interface Execution {
   /** ID of this execution */
   id: string;
   /** Code snippet being run */
-  snippet: string;
+  codeBlocks: string[];
   /**
    * Output result of this execution
    * Since this is a URI it could be a file, a url or even
    * raw contents via string:// or bin:// or json://
    */
-  outputUri: string;
+  execResults: ExecResult[];
   /** Status of the execution */
   status: string;
   /** Run against a specific environment */
   envId?:
+    | string
+    | undefined;
+  /** Env points to a pre-install environment directory */
+  envDir?:
     | string
     | undefined;
   /**
@@ -64,6 +68,12 @@ export interface Execution {
    * This could result in a new environment just for this execution
    */
   newEnv?: Environment | undefined;
+}
+
+export interface ExecResult {
+  status: string;
+  error: string;
+  output: string;
 }
 
 export interface CreateEnvironmentRequest {
@@ -325,10 +335,11 @@ function createBaseExecution(): Execution {
     updatedAt: undefined,
     ownerId: "",
     id: "",
-    snippet: "",
-    outputUri: "",
+    codeBlocks: [],
+    execResults: [],
     status: "",
     envId: undefined,
+    envDir: undefined,
     newEnv: undefined,
   };
 }
@@ -347,11 +358,11 @@ export const Execution = {
     if (message.id !== "") {
       writer.uint32(42).string(message.id);
     }
-    if (message.snippet !== "") {
-      writer.uint32(50).string(message.snippet);
+    for (const v of message.codeBlocks) {
+      writer.uint32(50).string(v!);
     }
-    if (message.outputUri !== "") {
-      writer.uint32(58).string(message.outputUri);
+    for (const v of message.execResults) {
+      ExecResult.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     if (message.status !== "") {
       writer.uint32(66).string(message.status);
@@ -359,8 +370,11 @@ export const Execution = {
     if (message.envId !== undefined) {
       writer.uint32(74).string(message.envId);
     }
+    if (message.envDir !== undefined) {
+      writer.uint32(82).string(message.envDir);
+    }
     if (message.newEnv !== undefined) {
-      Environment.encode(message.newEnv, writer.uint32(82).fork()).ldelim();
+      Environment.encode(message.newEnv, writer.uint32(90).fork()).ldelim();
     }
     return writer;
   },
@@ -385,10 +399,10 @@ export const Execution = {
           message.id = reader.string();
           break;
         case 6:
-          message.snippet = reader.string();
+          message.codeBlocks.push(reader.string());
           break;
         case 7:
-          message.outputUri = reader.string();
+          message.execResults.push(ExecResult.decode(reader, reader.uint32()));
           break;
         case 8:
           message.status = reader.string();
@@ -397,6 +411,9 @@ export const Execution = {
           message.envId = reader.string();
           break;
         case 10:
+          message.envDir = reader.string();
+          break;
+        case 11:
           message.newEnv = Environment.decode(reader, reader.uint32());
           break;
         default:
@@ -413,10 +430,11 @@ export const Execution = {
       updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
       ownerId: isSet(object.ownerId) ? String(object.ownerId) : "",
       id: isSet(object.id) ? String(object.id) : "",
-      snippet: isSet(object.snippet) ? String(object.snippet) : "",
-      outputUri: isSet(object.outputUri) ? String(object.outputUri) : "",
+      codeBlocks: Array.isArray(object?.codeBlocks) ? object.codeBlocks.map((e: any) => String(e)) : [],
+      execResults: Array.isArray(object?.execResults) ? object.execResults.map((e: any) => ExecResult.fromJSON(e)) : [],
       status: isSet(object.status) ? String(object.status) : "",
       envId: isSet(object.envId) ? String(object.envId) : undefined,
+      envDir: isSet(object.envDir) ? String(object.envDir) : undefined,
       newEnv: isSet(object.newEnv) ? Environment.fromJSON(object.newEnv) : undefined,
     };
   },
@@ -427,10 +445,19 @@ export const Execution = {
     message.updatedAt !== undefined && (obj.updatedAt = message.updatedAt.toISOString());
     message.ownerId !== undefined && (obj.ownerId = message.ownerId);
     message.id !== undefined && (obj.id = message.id);
-    message.snippet !== undefined && (obj.snippet = message.snippet);
-    message.outputUri !== undefined && (obj.outputUri = message.outputUri);
+    if (message.codeBlocks) {
+      obj.codeBlocks = message.codeBlocks.map((e) => e);
+    } else {
+      obj.codeBlocks = [];
+    }
+    if (message.execResults) {
+      obj.execResults = message.execResults.map((e) => e ? ExecResult.toJSON(e) : undefined);
+    } else {
+      obj.execResults = [];
+    }
     message.status !== undefined && (obj.status = message.status);
     message.envId !== undefined && (obj.envId = message.envId);
+    message.envDir !== undefined && (obj.envDir = message.envDir);
     message.newEnv !== undefined && (obj.newEnv = message.newEnv ? Environment.toJSON(message.newEnv) : undefined);
     return obj;
   },
@@ -441,13 +468,81 @@ export const Execution = {
     message.updatedAt = object.updatedAt ?? undefined;
     message.ownerId = object.ownerId ?? "";
     message.id = object.id ?? "";
-    message.snippet = object.snippet ?? "";
-    message.outputUri = object.outputUri ?? "";
+    message.codeBlocks = object.codeBlocks?.map((e) => e) || [];
+    message.execResults = object.execResults?.map((e) => ExecResult.fromPartial(e)) || [];
     message.status = object.status ?? "";
     message.envId = object.envId ?? undefined;
+    message.envDir = object.envDir ?? undefined;
     message.newEnv = (object.newEnv !== undefined && object.newEnv !== null)
       ? Environment.fromPartial(object.newEnv)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseExecResult(): ExecResult {
+  return { status: "", error: "", output: "" };
+}
+
+export const ExecResult = {
+  encode(message: ExecResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.status !== "") {
+      writer.uint32(10).string(message.status);
+    }
+    if (message.error !== "") {
+      writer.uint32(18).string(message.error);
+    }
+    if (message.output !== "") {
+      writer.uint32(26).string(message.output);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ExecResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseExecResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.status = reader.string();
+          break;
+        case 2:
+          message.error = reader.string();
+          break;
+        case 3:
+          message.output = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ExecResult {
+    return {
+      status: isSet(object.status) ? String(object.status) : "",
+      error: isSet(object.error) ? String(object.error) : "",
+      output: isSet(object.output) ? String(object.output) : "",
+    };
+  },
+
+  toJSON(message: ExecResult): unknown {
+    const obj: any = {};
+    message.status !== undefined && (obj.status = message.status);
+    message.error !== undefined && (obj.error = message.error);
+    message.output !== undefined && (obj.output = message.output);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ExecResult>, I>>(object: I): ExecResult {
+    const message = createBaseExecResult();
+    message.status = object.status ?? "";
+    message.error = object.error ?? "";
+    message.output = object.output ?? "";
     return message;
   },
 };
