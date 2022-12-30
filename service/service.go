@@ -57,16 +57,33 @@ func (s *SnippetService) CreateEnvironment(ctx context.Context, request *protos.
 }
 
 func (s *SnippetService) CreateExecution(ctx context.Context, request *protos.CreateExecutionRequest) (resp *protos.CreateExecutionResponse, err error) {
+	resp = &protos.CreateExecutionResponse{
+		Execution: &protos.Execution{
+			CodeBlocks: request.CodeBlocks,
+			OwnerId:    request.OwnerId,
+		},
+	}
 	switch op := request.EnvDetails.(type) {
 	case *protos.CreateExecutionRequest_EnvId:
+		resp.Execution.EnvDetails = &protos.Execution_EnvId{
+			EnvId: op.EnvId,
+		}
 		break
 	case *protos.CreateExecutionRequest_EnvDir:
 		stdout, stderr, err := ExecuteBlocks(request.SnippetId, request.CodeBlocks, op.EnvDir, false)
 		if err != nil {
 			return nil, err
 		}
+		resp.Execution.EnvDetails = &protos.Execution_EnvDir{
+			EnvDir: op.EnvDir,
+		}
+		resp.Execution.ErrorOutput = stderr
+		resp.Execution.BlockOutputs = stdout
 		break
 	case *protos.CreateExecutionRequest_NewEnv:
+		resp.Execution.EnvDetails = &protos.Execution_NewEnv{
+			NewEnv: op.NewEnv,
+		}
 		break
 	default:
 		fmt.Println("Invalid env_details field")
