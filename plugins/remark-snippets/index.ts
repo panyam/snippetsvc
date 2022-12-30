@@ -200,34 +200,8 @@ export class Snippet {
         codeBlocks: codeBlocks,
         envDir: '/tmp/enva',
       });
-    } catch (err: any) {
-      console.log('GRPC Error: ', err);
-      return Promise.resolve(out);
-    }
+      console.log('Response: ', resp);
 
-    out.push({
-      type: 'mdxJsxFlowElement',
-      name: 'h3',
-      attributes: [],
-      children: [
-        {
-          type: 'paragraph',
-          children: [
-            {
-              type: 'text',
-              value: 'Output',
-            },
-          ],
-        },
-      ],
-      data: { _mdxExplicitJsx: true },
-    });
-    /*
-    const value = `<pre><code>{\`${processOutput}\`}</code></pre>`;
-    console.log('Value: ', value);
-    out.push(parseMarkup(value));
-
-    if (processError.length > 0) {
       out.push({
         type: 'mdxJsxFlowElement',
         name: 'h3',
@@ -238,20 +212,47 @@ export class Snippet {
             children: [
               {
                 type: 'text',
-                value: 'Error',
+                value: 'Output',
               },
             ],
           },
         ],
         data: { _mdxExplicitJsx: true },
       });
-      const value = `<pre><code>{\`${processError}\`}</code></pre>`;
+
+      const blockOutputs = resp.execution!.blockOutputs;
+      const processOutput = blockOutputs[blockOutputs.length - 1];
+      const value = `<pre><code>{\`${processOutput}\`}</code></pre>`;
+      console.log('Value: ', value);
+
+      const processError = resp.execution!.errorOutput;
       out.push(parseMarkup(value));
+      if (processError.length > 0) {
+        out.push({
+          type: 'mdxJsxFlowElement',
+          name: 'h3',
+          attributes: [],
+          children: [
+            {
+              type: 'paragraph',
+              children: [
+                {
+                  type: 'text',
+                  value: 'Error',
+                },
+              ],
+            },
+          ],
+          data: { _mdxExplicitJsx: true },
+        });
+        const value = `<pre><code>{\`${processError}\`}</code></pre>`;
+        out.push(parseMarkup(value));
+      }
+    } catch (err: any) {
+      console.log('GRPC Error: ', err);
+      return out;
     }
-    // Write the output back
-    fs.writeFileSync(snippetOutfile, JSON.stringify(out));
-    return Promise.resolve(out);
-   */
-    return Promise.resolve(out);
+
+    return out;
   }
 }

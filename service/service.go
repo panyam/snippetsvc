@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/panyam/goutils/utils"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	// gut "github.com/panyam/goutils/utils"
@@ -63,6 +64,7 @@ func (s *SnippetService) CreateExecution(ctx context.Context, request *protos.Cr
 			OwnerId:    request.OwnerId,
 		},
 	}
+	log.Println("Executing code blocks: ", request.CodeBlocks)
 	switch op := request.EnvDetails.(type) {
 	case *protos.CreateExecutionRequest_EnvId:
 		resp.Execution.EnvDetails = &protos.Execution_EnvId{
