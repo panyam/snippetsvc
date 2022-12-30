@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/panyam/goutils/utils"
 	"io/ioutil"
 	"os"
@@ -56,17 +57,20 @@ func (s *SnippetService) CreateEnvironment(ctx context.Context, request *protos.
 }
 
 func (s *SnippetService) CreateExecution(ctx context.Context, request *protos.CreateExecutionRequest) (resp *protos.CreateExecutionResponse, err error) {
-	/*
-		switch op := request.EnvDetails.(type) {
-		case *string:
-			envdir := fmt.Sprintf
-			break
-		case *protos.Environment:
-			break
-		default:
-			fmt.Println("Invalid env_details field")
-			break
+	switch op := request.EnvDetails.(type) {
+	case *protos.CreateExecutionRequest_EnvId:
+		break
+	case *protos.CreateExecutionRequest_EnvDir:
+		stdout, stderr, err := ExecuteBlocks(request.SnippetId, request.CodeBlocks, op.EnvDir, false)
+		if err != nil {
+			return nil, err
 		}
-	*/
+		break
+	case *protos.CreateExecutionRequest_NewEnv:
+		break
+	default:
+		fmt.Println("Invalid env_details field")
+		break
+	}
 	return
 }

@@ -77,6 +77,7 @@ export interface ExecResult {
 }
 
 export interface CreateEnvironmentRequest {
+  environment?: Environment;
 }
 
 export interface GetEnvironmentsRequest {
@@ -123,6 +124,13 @@ export interface CreateExecutionRequest {
   snippetId: string;
   /** Code snippet being run */
   codeBlocks: string[];
+  /** stdoutput of the code blocks. */
+  blockOutputs: string[];
+  /**
+   * Error output.  Note only 1 is recorded here and executions stops
+   * at the first error encountered by the commands.
+   */
+  errorOutput: string;
   /** Run against a specific environment */
   envId?:
     | string
@@ -567,11 +575,14 @@ export const ExecResult = {
 };
 
 function createBaseCreateEnvironmentRequest(): CreateEnvironmentRequest {
-  return {};
+  return { environment: undefined };
 }
 
 export const CreateEnvironmentRequest = {
-  encode(_: CreateEnvironmentRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: CreateEnvironmentRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.environment !== undefined) {
+      Environment.encode(message.environment, writer.uint32(10).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -582,6 +593,9 @@ export const CreateEnvironmentRequest = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.environment = Environment.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -590,17 +604,22 @@ export const CreateEnvironmentRequest = {
     return message;
   },
 
-  fromJSON(_: any): CreateEnvironmentRequest {
-    return {};
+  fromJSON(object: any): CreateEnvironmentRequest {
+    return { environment: isSet(object.environment) ? Environment.fromJSON(object.environment) : undefined };
   },
 
-  toJSON(_: CreateEnvironmentRequest): unknown {
+  toJSON(message: CreateEnvironmentRequest): unknown {
     const obj: any = {};
+    message.environment !== undefined &&
+      (obj.environment = message.environment ? Environment.toJSON(message.environment) : undefined);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<CreateEnvironmentRequest>, I>>(_: I): CreateEnvironmentRequest {
+  fromPartial<I extends Exact<DeepPartial<CreateEnvironmentRequest>, I>>(object: I): CreateEnvironmentRequest {
     const message = createBaseCreateEnvironmentRequest();
+    message.environment = (object.environment !== undefined && object.environment !== null)
+      ? Environment.fromPartial(object.environment)
+      : undefined;
     return message;
   },
 };
@@ -1084,7 +1103,16 @@ export const DeleteEnvironmentResponse = {
 };
 
 function createBaseCreateExecutionRequest(): CreateExecutionRequest {
-  return { ownerId: "", snippetId: "", codeBlocks: [], envId: undefined, envDir: undefined, newEnv: undefined };
+  return {
+    ownerId: "",
+    snippetId: "",
+    codeBlocks: [],
+    blockOutputs: [],
+    errorOutput: "",
+    envId: undefined,
+    envDir: undefined,
+    newEnv: undefined,
+  };
 }
 
 export const CreateExecutionRequest = {
@@ -1098,14 +1126,20 @@ export const CreateExecutionRequest = {
     for (const v of message.codeBlocks) {
       writer.uint32(26).string(v!);
     }
+    for (const v of message.blockOutputs) {
+      writer.uint32(34).string(v!);
+    }
+    if (message.errorOutput !== "") {
+      writer.uint32(42).string(message.errorOutput);
+    }
     if (message.envId !== undefined) {
-      writer.uint32(34).string(message.envId);
+      writer.uint32(50).string(message.envId);
     }
     if (message.envDir !== undefined) {
-      writer.uint32(42).string(message.envDir);
+      writer.uint32(58).string(message.envDir);
     }
     if (message.newEnv !== undefined) {
-      Environment.encode(message.newEnv, writer.uint32(50).fork()).ldelim();
+      Environment.encode(message.newEnv, writer.uint32(66).fork()).ldelim();
     }
     return writer;
   },
@@ -1127,12 +1161,18 @@ export const CreateExecutionRequest = {
           message.codeBlocks.push(reader.string());
           break;
         case 4:
-          message.envId = reader.string();
+          message.blockOutputs.push(reader.string());
           break;
         case 5:
-          message.envDir = reader.string();
+          message.errorOutput = reader.string();
           break;
         case 6:
+          message.envId = reader.string();
+          break;
+        case 7:
+          message.envDir = reader.string();
+          break;
+        case 8:
           message.newEnv = Environment.decode(reader, reader.uint32());
           break;
         default:
@@ -1148,6 +1188,8 @@ export const CreateExecutionRequest = {
       ownerId: isSet(object.ownerId) ? String(object.ownerId) : "",
       snippetId: isSet(object.snippetId) ? String(object.snippetId) : "",
       codeBlocks: Array.isArray(object?.codeBlocks) ? object.codeBlocks.map((e: any) => String(e)) : [],
+      blockOutputs: Array.isArray(object?.blockOutputs) ? object.blockOutputs.map((e: any) => String(e)) : [],
+      errorOutput: isSet(object.errorOutput) ? String(object.errorOutput) : "",
       envId: isSet(object.envId) ? String(object.envId) : undefined,
       envDir: isSet(object.envDir) ? String(object.envDir) : undefined,
       newEnv: isSet(object.newEnv) ? Environment.fromJSON(object.newEnv) : undefined,
@@ -1163,6 +1205,12 @@ export const CreateExecutionRequest = {
     } else {
       obj.codeBlocks = [];
     }
+    if (message.blockOutputs) {
+      obj.blockOutputs = message.blockOutputs.map((e) => e);
+    } else {
+      obj.blockOutputs = [];
+    }
+    message.errorOutput !== undefined && (obj.errorOutput = message.errorOutput);
     message.envId !== undefined && (obj.envId = message.envId);
     message.envDir !== undefined && (obj.envDir = message.envDir);
     message.newEnv !== undefined && (obj.newEnv = message.newEnv ? Environment.toJSON(message.newEnv) : undefined);
@@ -1174,6 +1222,8 @@ export const CreateExecutionRequest = {
     message.ownerId = object.ownerId ?? "";
     message.snippetId = object.snippetId ?? "";
     message.codeBlocks = object.codeBlocks?.map((e) => e) || [];
+    message.blockOutputs = object.blockOutputs?.map((e) => e) || [];
+    message.errorOutput = object.errorOutput ?? "";
     message.envId = object.envId ?? undefined;
     message.envDir = object.envDir ?? undefined;
     message.newEnv = (object.newEnv !== undefined && object.newEnv !== null)
