@@ -1,7 +1,9 @@
 {
   "name": "remark-snippets",
-  "version": "0.0.1",
+  "version": "0.0.3",
+  "author": "Sriram Panyam",
   "description": "A snippet plugin for MDX where snippets are executed and their outputs caputred allowing for upto date documentation pages.",
+  "license": "ISC",
   "main": "index.js",
   "exports": [
     "./index.js"
@@ -12,20 +14,26 @@
   },
   "files": [
     "index.js",
-    "index.d.ts",
-    "utils.js",
-    "utils.d.ts"
+    "index.d.ts"
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "npm test"
+    "build": "npm run prepack",
+    "test": "npm test",
+    "lint": "eslint './' --quiet --ext .ts --resolve-plugins-relative-to .",
+    "lintfix": "eslint '*.ts' --quiet --fix --resolve-plugins-relative-to .",
+    "format": "prettier --write \"*.ts\" \"*.js\"",
+    "precommit-msg": "echo 'Pre-commit checks...' && exit 0",
+    "prepare": "npm run build",
+    "prepublishOnly": "echo prepublishOnly...",
+    "preversion": "npm run build && npm run lintfix",
+    "version": "git add -A .",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/panyam/snippetsvc/tree/master/plugins/remark-snippets"
   },
-  "author": "Sriram Panyam",
-  "license": "ISC",
   "dependencies": {
     "@types/mdast": "^3.0.10",
     "acorn-jsx": "^5.3.2",
@@ -38,6 +46,8 @@
     "@types/estree": "^1.0.0",
     "@types/node": "^18.11.18",
     "@types/prettier": "^2.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.47.1",
+    "@typescript-eslint/parser": "^5.47.1",
     "esbuild": "^0.16.12",
     "eslint": "^8.30.0",
     "eslint-plugin-react": "^7.31.11",

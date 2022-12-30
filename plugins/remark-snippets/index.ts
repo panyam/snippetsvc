@@ -36,7 +36,7 @@ function createTransformer(options: any): Transformer<Root> {
     }
     const foundSnippets = new Map<string, Snippet>();
     const allSnippets = [] as Snippet[];
-    let count = 0;
+    const count = 0;
     visit(
       ast,
       'mdxJsxFlowElement',
@@ -153,7 +153,7 @@ function parseMarkup(value: string): any {
 
 export class Snippet {
   prev: Snippet | null = null;
-  setupCode: string = '';
+  setupCode = '';
   hidden = false;
   hideOutput = false;
   index = 0;
@@ -166,7 +166,7 @@ export class Snippet {
   ) {}
 
   get codeBlocks(): string[] {
-    let out = this.prev != null ? this.prev.codeBlocks : [];
+    const out = this.prev != null ? this.prev.codeBlocks : [];
     if (this.setupCode[0] == '`') {
       this.setupCode = eval(this.setupCode);
     }
