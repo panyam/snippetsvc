@@ -189,19 +189,22 @@ export class Snippet {
    */
   async execute(envdir: string): Promise<any[]> {
     const codeBlocks = this.codeBlocks;
-    const resp = await snippets.call<
-      snippets.CreateExecutionRequest,
-      snippets.CreateExecutionResponse
-    >(snippetsClient, 'createExecution', {
-      owner_id: 1,
-      snippet_id: snippetId,
-      code_blocks: codeBlocks,
-      env_details: {
-        env_dir: '/tmp/enva',
-      },
-    });
-
     const out = [] as any[];
+    try {
+      const resp = await snippets.call<
+        snippets.CreateExecutionRequest,
+        snippets.CreateExecutionResponse
+      >(snippetsClient, 'createExecution', {
+        ownerId: '1',
+        snippetId: this.id,
+        codeBlocks: codeBlocks,
+        envDir: '/tmp/enva',
+      });
+    } catch (err: any) {
+      console.log('GRPC Error: ', err);
+      return Promise.resolve(out);
+    }
+
     out.push({
       type: 'mdxJsxFlowElement',
       name: 'h3',
@@ -245,11 +248,10 @@ export class Snippet {
       const value = `<pre><code>{\`${processError}\`}</code></pre>`;
       out.push(parseMarkup(value));
     }
-
     // Write the output back
     fs.writeFileSync(snippetOutfile, JSON.stringify(out));
     return Promise.resolve(out);
    */
-    return Promise.resolve([]);
+    return Promise.resolve(out);
   }
 }

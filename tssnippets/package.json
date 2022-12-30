@@ -1,6 +1,6 @@
 {
   "name": "snippetsvc",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "author": "Sriram Panyam",
   "description": "TS client bindings for Snippets service",
   "license": "ISC",
@@ -36,7 +36,7 @@
     "prepublishOnly": "echo prepublishOnly...",
     "preversion": "npm run build && npm run lintfix",
     "version": "git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git commit -anm 'Updated patch version' && git push && git push --tags"
   },
   "directories": {
     "doc": "docs",
