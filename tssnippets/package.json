@@ -1,6 +1,6 @@
 {
   "name": "snippetsvc",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Sriram Panyam",
   "description": "TS client bindings for Snippets service",
   "license": "ISC",
