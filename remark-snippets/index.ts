@@ -4,13 +4,9 @@ import { BaseNode, Program } from 'estree';
 import { Content, Code, Parent, Root } from 'mdast';
 import { MdxJsxFlowElement, MdxFlowExpression } from 'mdast-util-mdx';
 import { Plugin, Transformer } from 'unified';
-import { visit } from 'unist-util-visit';
 import util from 'util';
-import crypto from 'crypto';
-import path from 'path';
-import fs from 'fs';
+import { visit } from 'unist-util-visit';
 import * as snippets from 'snippetsvc';
-import { execFile, execFileSync, ChildProcess } from 'child_process';
 
 const logTree = false;
 // TODO - put this in a map and create this in the transformer when we konw
@@ -91,28 +87,26 @@ function createTransformer(options: any): Transformer<Root> {
     // the real code of all its prev nodes is good enough.  Also no topological sort
     // needed
     // Build a dag of all the promises and execute them in a topologically sorted way
+    console.log('=='.repeat(80));
+    console.log(
+      'Full AST: Before ',
+      util.inspect(ast, { showHidden: false, depth: null, colors: true }),
+    );
     const allPromises = allSnippets.map((sn: any) => sn.promise);
     const promiseValues = await Promise.all(allPromises);
     allSnippets.sort((a: any, b: any) => b.index - a.index);
-    console.log(
-      'SN: ',
-      allSnippets,
-      'PromiseValues: ',
-      promiseValues,
-      /*
-      util.inspect(promiseValues, {
-        showHidden: false,
-        depth: null,
-        colors: true,
-      }),
-     */
-    );
+    console.log('SN: ', allSnippets, 'PromiseValues: ', promiseValues);
 
     allSnippets.forEach((sncode: Snippet, ind: number) => {
       const parent = sncode.parent as Parent;
       const index = sncode.index as number;
       parent.children.splice(index, 1, ...promiseValues[ind]);
     });
+
+    console.log(
+      'Full AST: After',
+      util.inspect(ast, { showHidden: false, depth: null, colors: true }),
+    );
   };
 }
 
@@ -202,32 +196,7 @@ export class Snippet {
       });
       console.log('Response: ', resp);
 
-      out.push({
-        type: 'mdxJsxFlowElement',
-        name: 'h3',
-        attributes: [],
-        children: [
-          {
-            type: 'paragraph',
-            children: [
-              {
-                type: 'text',
-                value: 'Output',
-              },
-            ],
-          },
-        ],
-        data: { _mdxExplicitJsx: true },
-      });
-
-      const blockOutputs = resp.execution!.blockOutputs;
-      const processOutput = blockOutputs[blockOutputs.length - 1];
-      const value = `<pre><code>{\`${processOutput}\`}</code></pre>`;
-      console.log('Value: ', value);
-
-      const processError = resp.execution!.errorOutput;
-      out.push(parseMarkup(value));
-      if (processError.length > 0) {
+      if (resp.execution) {
         out.push({
           type: 'mdxJsxFlowElement',
           name: 'h3',
@@ -238,21 +207,46 @@ export class Snippet {
               children: [
                 {
                   type: 'text',
-                  value: 'Error',
+                  value: 'Output',
                 },
               ],
             },
           ],
           data: { _mdxExplicitJsx: true },
         });
-        const value = `<pre><code>{\`${processError}\`}</code></pre>`;
+
+        const blockOutputs = resp.execution.blockOutputs;
+        const processOutput = blockOutputs[blockOutputs.length - 1];
+        const value = `<pre><code>{\`${processOutput}\`}</code></pre>`;
+        console.log('Value: ', value);
+
+        const processError = resp.execution.errorOutput;
         out.push(parseMarkup(value));
+        if (processError.length > 0) {
+          out.push({
+            type: 'mdxJsxFlowElement',
+            name: 'h3',
+            attributes: [],
+            children: [
+              {
+                type: 'paragraph',
+                children: [
+                  {
+                    type: 'text',
+                    value: 'Error',
+                  },
+                ],
+              },
+            ],
+            data: { _mdxExplicitJsx: true },
+          });
+          const value = `<pre><code>{\`${processError}\`}</code></pre>`;
+          out.push(parseMarkup(value));
+        }
       }
     } catch (err: any) {
       console.log('GRPC Error: ', err);
-      return out;
     }
-
     return out;
   }
 }
