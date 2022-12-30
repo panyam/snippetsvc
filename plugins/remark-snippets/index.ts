@@ -1,6 +1,5 @@
 import jsx from 'acorn-jsx';
 import { Parser } from 'acorn';
-import { createChannel, createClient, Client } from 'nice-grpc';
 import { BaseNode, Program } from 'estree';
 import { Content, Code, Parent, Root } from 'mdast';
 import { MdxJsxFlowElement, MdxFlowExpression } from 'mdast-util-mdx';
@@ -36,7 +35,6 @@ function createTransformer(options: any): Transformer<Root> {
     }
     const foundSnippets = new Map<string, Snippet>();
     const allSnippets = [] as Snippet[];
-    const count = 0;
     visit(
       ast,
       'mdxJsxFlowElement',
@@ -191,12 +189,12 @@ export class Snippet {
    */
   async execute(envdir: string): Promise<any[]> {
     const codeBlocks = this.codeBlocks;
-    const out = await snippets.call<
+    const resp = await snippets.call<
       snippets.CreateExecutionRequest,
       snippets.CreateExecutionResponse
-    >(snippetsClient, 'CreateExecution', {});
+    >(snippetsClient, 'createExecution', {});
 
-    /*
+    const out = [] as any[];
     out.push({
       type: 'mdxJsxFlowElement',
       name: 'h3',
@@ -214,6 +212,7 @@ export class Snippet {
       ],
       data: { _mdxExplicitJsx: true },
     });
+    /*
     const value = `<pre><code>{\`${processOutput}\`}</code></pre>`;
     console.log('Value: ', value);
     out.push(parseMarkup(value));
