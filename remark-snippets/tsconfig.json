@@ -1,20 +1,34 @@
 {
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "lib",
+    "./src/**/*.spec.ts"
   ],
   "compilerOptions": {
+    "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "noEmit": true,
+    "downlevelIteration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "outDir": "lib/esm",
+    "plugins": [ { "name": "typescript-tslint-plugin" } ],
+    "removeComments": true,
     "skipLibCheck": true,
+    "sourceMap": true,
+    "inlineSources": true,
     "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": false,
+    "module": "esnext",
     "target": "es2018"
   },
   "include": [
-    "./index.ts"
+    "./src/**/*.ts"
   ]
 }

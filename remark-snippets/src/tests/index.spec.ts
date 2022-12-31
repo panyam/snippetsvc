@@ -1,9 +1,12 @@
 /* eslint-disable */
-import plugin = require('./index');
-const remark = require('remark');
+import plugin from '../index';
+import { remark } from 'remark';
+
+console.log('Plugin: ', plugin);
+console.log('Rem: ', remark);
 
 async function runTest(input: string, expected: any) {
-  const result = await remark().use(plugin).process(input);
+  const result = await remark().process(input);
   console.log('Result: ', result);
   /*
   const result = await compile(input, {

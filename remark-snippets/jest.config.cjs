@@ -21,5 +21,5 @@ module.exports = {
     "^.+\\.jsx?$": "babel-jest", // Adding this line solved the issue
     "^.+\\.(ts|tsx)?$": "ts-jest",
   },
-  moduleDirectories: ["node_modules", "<rootDir>"],
+  moduleDirectories: ["node_modules", "src"],
 };

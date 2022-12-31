@@ -1,17 +1,20 @@
 import jsx from 'acorn-jsx';
 import { Parser } from 'acorn';
-import { BaseNode, Program } from 'estree';
+// import { BaseNode, Program } from 'estree';
 import { Content, Code, Parent, Root } from 'mdast';
 import { MdxJsxFlowElement, MdxFlowExpression } from 'mdast-util-mdx';
 import { Plugin, Transformer } from 'unified';
 import util from 'util';
-import { visit } from 'unist-util-visit';
 import * as snippets from 'snippetsvc';
+import { visit } from 'unist-util-visit';
+// const visit = require('unist-util-visit').default
 
 const logTree = false;
 // TODO - put this in a map and create this in the transformer when we konw
 // a different address
 const snippetsClient = snippets.NewClient();
+
+// function visit(ast: any, elem: string, visitor: any) {}
 
 function createTransformer(options: any): Transformer<Root> {
   return async (ast, file) => {
@@ -109,15 +112,6 @@ function createTransformer(options: any): Transformer<Root> {
     );
   };
 }
-
-/**
- * A markdown plugin for transforming code metadata.
- *
- * @returns A unified transformer.
- */
-const remarkMdxCodeMeta: Plugin<[any], Root> = createTransformer;
-
-export default remarkMdxCodeMeta;
 
 function getAttrib(node: any, attribName: string): any {
   const attrib = node.attributes.filter(
@@ -250,3 +244,11 @@ export class Snippet {
     return out;
   }
 }
+
+/**
+ * A markdown plugin for transforming code metadata.
+ *
+ * @returns A unified transformer.
+ */
+const remarkMdxSnippets: Plugin<[any], Root> = createTransformer;
+export default remarkMdxSnippets;
