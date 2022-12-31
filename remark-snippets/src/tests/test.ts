@@ -11,15 +11,6 @@ import plugin from '../';
 const fixtures = './src/tests/fixtures';
 const inspect = (result: any) => util.inspect(result, false, null, true);
 
-function stripPositions(ast: any): any {
-  if (ast) {
-    delete ast['position'];
-    for (const child of ast.children || []) {
-      stripPositions(child);
-    }
-  }
-}
-
 async function runTest(name: string, override = false) {
   console.log('Runnign test: ', name);
   const [input, expected] = await readCase(name);
@@ -78,16 +69,5 @@ const startTest = (name: string, override = false) =>
   test(name, async () => await runTest(name, override));
 
 startTest('basic', true);
-/*
-    const result = await compile(input, {
-      remarkPlugins: [remarkMdxCodeMeta],
-      jsx: true,
-    });
-    const formatted = prettier.format(String(result), { parser: 'babel' });
-    if (process.argv.includes('--write')) {
-      await writeFile(expected, formatted);
-    }
-    */
-// equal(formatted, await readFile(expected, 'utf8'));
 
 test.run();

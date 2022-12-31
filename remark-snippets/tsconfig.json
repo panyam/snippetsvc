@@ -19,6 +19,9 @@
     "outDir": "lib/esm",
     "plugins": [ { "name": "typescript-tslint-plugin" } ],
     "removeComments": true,
+    "lib": [
+      "ES2021.String"
+    ],
     "skipLibCheck": true,
     "sourceMap": true,
     "inlineSources": true,
