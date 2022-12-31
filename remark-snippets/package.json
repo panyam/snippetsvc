@@ -1,6 +1,6 @@
 {
   "name": "remark-snippets",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Sriram Panyam",
   "description": "A snippet plugin for MDX where snippets are executed and their outputs caputred allowing for upto date documentation pages.",
   "license": "ISC",
@@ -32,8 +32,8 @@
     "test": "c8 tsx src/tests/test.ts",
     "test2": "jest --coverage --runInBand",
     "lint": "eslint './' --quiet --ext .ts --resolve-plugins-relative-to .",
-    "lintfix": "eslint '*.ts' --quiet --fix --resolve-plugins-relative-to .",
-    "format": "prettier --write \"*.ts\" \"*.js\"",
+    "lintfix": "eslint 'src/*.ts' --quiet --fix --resolve-plugins-relative-to .",
+    "format": "prettier --write \"src/*.ts\" \"*.js\"",
     "precommit-msg": "echo 'Pre-commit checks...' && exit 0",
     "prepare": "npm run build",
     "prepublishOnly": "echo prepublishOnly...",
