@@ -31,15 +31,20 @@ function createTransformer(options: any): Transformer<Root> {
     // console.log('Full AST Before: ', inspect(ast));
     const allPromises = allSnippets.map((sn: any) => sn.promise);
     const promiseValues = await Promise.all(allPromises);
-    allSnippets.sort((a: Snippet, b: Snippet) => b.childIndex - a.childIndex);
+
+    // reverse snippets and the promise values too
+    allSnippets.reverse()
+    promiseValues.reverse()
+    // allSnippets.sort((a: Snippet, b: Snippet) => b.childIndex - a.childIndex);
     // console.log('SN: ', allSnippets, 'PromiseValues: ', inspect(promiseValues));
 
     allSnippets.forEach((sncode: Snippet, ind: number) => {
       const parent = sncode.parent as Parent;
       const index = sncode.childIndex as number;
+      // console.log("Inserting after: ", parent.children[index]);
       parent.children.splice(index + 1, 0, ...promiseValues[ind]);
+      // console.log('Full AST After: ', index, inspect(ast));
     });
-    // console.log('Full AST After: ', inspect(ast));
   };
 }
 

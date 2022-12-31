@@ -42,7 +42,7 @@ async function runTest(name: string, override = false) {
   if (override) {
     await writeFixture(name, 'expected.txt', formatted);
   } else {
-    equal(result.value, expected);
+    equal(formatted, expected);
   }
 }
 
@@ -68,6 +68,8 @@ async function readCase(name: string): Promise<[string, string]> {
 const startTest = (name: string, override = false) =>
   test(name, async () => await runTest(name, override));
 
-startTest('basic', true);
+startTest('basic', false);
+startTest('2', false);
+startTest('twosnippets', false);
 
 test.run();
