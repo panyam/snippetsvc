@@ -1,0 +1,64 @@
+/*@jsxRuntime automatic @jsxImportSource react*/
+function _createMdxContent(props) {
+  const _components = Object.assign(
+    {
+      h2: "h2",
+      pre: "pre",
+      code: "code",
+      p: "p",
+    },
+    props.components
+  );
+  return (
+    <>
+      <_components.h2>{"Source 1"}</_components.h2>
+      {"\n"}
+      <_components.pre>
+        <_components.code className="language-ts">
+          {'console.log("Line 1")\n'}
+        </_components.code>
+      </_components.pre>
+      {"\n"}
+      <h3>
+        <_components.p>{"Output"}</_components.p>
+      </h3>
+      {"\n"}
+      {
+        <_components.pre>
+          <_components.code>{`Line 1
+`}</_components.code>
+        </_components.pre>
+      }
+      {"\n"}
+      <_components.h2>{"Source 2"}</_components.h2>
+      {"\n"}
+      <_components.pre>
+        <_components.code className="language-ts">
+          {'console.log("Line 2")\n'}
+        </_components.code>
+      </_components.pre>
+      {"\n"}
+      <h3>
+        <_components.p>{"Output"}</_components.p>
+      </h3>
+      {"\n"}
+      {
+        <_components.pre>
+          <_components.code>{`Line 2
+`}</_components.code>
+        </_components.pre>
+      }
+    </>
+  );
+}
+function MDXContent(props = {}) {
+  const { wrapper: MDXLayout } = props.components || {};
+  return MDXLayout ? (
+    <MDXLayout {...props}>
+      <_createMdxContent {...props} />
+    </MDXLayout>
+  ) : (
+    _createMdxContent(props)
+  );
+}
+export default MDXContent;
