@@ -4,7 +4,7 @@
   "author": "Sriram Panyam",
   "description": "A snippet plugin for MDX where snippets are executed and their outputs caputred allowing for upto date documentation pages.",
   "license": "ISC",
-  "types": "lib/cjs/index.d.ts",
+  "types": "./index.d.ts",
   "type": "module",
   "exports": [
     "./lib/esm/index.js"
@@ -29,7 +29,8 @@
   "scripts": {
     "clean": "rm -Rf lib && jest --clearCache && rm -rf static/lib",
     "build": "npm run  clean && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
-    "test": "jest --coverage --runInBand",
+    "test": "c8 tsx src/tests/test.ts",
+    "test2": "jest --coverage --runInBand",
     "lint": "eslint './' --quiet --ext .ts --resolve-plugins-relative-to .",
     "lintfix": "eslint '*.ts' --quiet --fix --resolve-plugins-relative-to .",
     "format": "prettier --write \"*.ts\" \"*.js\"",
@@ -61,6 +62,7 @@
     "babel-core": "^6.26.3",
     "babel-jest": "^29.3.1",
     "babel-preset-env": "^1.7.0",
+    "c8": "^7.12.0",
     "esbuild": "^0.16.12",
     "eslint": "^8.30.0",
     "eslint-plugin-react": "^7.31.11",
@@ -70,14 +72,13 @@
     "mdast-util-mdx": "^2.0.0",
     "mdx-bundler": "^9.2.1",
     "prettier": "^2.8.1",
-    "remark": "^14.0.2",
     "to-vfile": "^7.2.3",
     "ts-jest": "^29.0.3",
     "tsx": "^3.12.1",
     "typescript": "^4.9.4",
+    "uvu": "^0.5.6",
     "xdm": "^3.4.0"
   },
-  "types": "./index.d.ts",
   "directories": {
     "doc": "docs"
   }

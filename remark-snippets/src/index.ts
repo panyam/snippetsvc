@@ -13,27 +13,84 @@ const logTree = false;
 // TODO - put this in a map and create this in the transformer when we konw
 // a different address
 const snippetsClient = snippets.NewClient();
+const inspect = (result: any) => util.inspect(result, false, null, true);
 
 // function visit(ast: any, elem: string, visitor: any) {}
 
 function createTransformer(options: any): Transformer<Root> {
   return async (ast, file) => {
     if (logTree) {
-      console.log(
-        'Full AST: ',
-        util.inspect(ast, { showHidden: false, depth: null, colors: true }),
-      );
-      console.log(
-        'Options: ',
-        util.inspect(options, { showHidden: false, depth: null, colors: true }),
-      );
-      console.log(
-        'Full File: ',
-        util.inspect(file, { showHidden: false, depth: null, colors: true }),
-      );
+      console.log('Options: ', inspect(options));
+      console.log('Full File: ', inspect(file));
     }
     const foundSnippets = new Map<string, Snippet>();
     const allSnippets = [] as Snippet[];
+    // visitSnipCodeNodes(ast, file, foundSnippets, allSnippets)
+    visitCodeNodes(ast, file, foundSnippets, allSnippets)
+
+    // console.log('Full AST Before: ', inspect(ast));
+    const allPromises = allSnippets.map((sn: any) => sn.promise);
+    const promiseValues = await Promise.all(allPromises);
+    allSnippets.sort((a: Snippet, b: Snippet) => b.childIndex - a.childIndex);
+    // console.log('SN: ', allSnippets, 'PromiseValues: ', inspect(promiseValues));
+
+    allSnippets.forEach((sncode: Snippet, ind: number) => {
+      const parent = sncode.parent as Parent;
+      const index = sncode.childIndex as number;
+      parent.children.splice(index + 1, 0, ...promiseValues[ind]);
+    });
+    // console.log('Full AST After: ', inspect(ast));
+  };
+}
+
+function visitCodeNodes(ast: any, file: any, foundSnippets: Map<string, Snippet>, allSnippets: Snippet[]) {
+    visit(
+      ast,
+      'code',
+      (
+        node: Code,
+        index: number | null,
+        parent: Parent | null,
+      ) => {
+        if (index == null || parent == null || !node.meta || !node.lang) {
+          return;
+        }
+        const attribs = parseMeta(node.meta);
+        // Our param values do not allow for strings with " = " in them
+        console.log("Meta: ", node.meta, attribs)
+        const idAttrib = attribs.get("snippet") || null;
+        if (idAttrib == null) {
+          return;
+        }
+        if (foundSnippets.has(idAttrib)) {
+          throw Error(
+            'Snippet elements *must* have a unique ID within the page',
+          );
+        }
+        const code = node.value;
+        // const env = attribs.get("env");
+        const prevSnipId = (attribs.get("prev") || "").trim()
+        const newSnippet = new Snippet(idAttrib, node, parent, code);
+        newSnippet.hidden = attribs.get("hidden") == "true"
+        newSnippet.silent = attribs.get("silent") == "true"
+        newSnippet.childIndex = index;
+        newSnippet.promise = newSnippet.execute('/tmp/enva');
+        if (prevSnipId != '') {
+          if (!foundSnippets.has(prevSnipId)) {
+            throw new Error('Previous snippet not found: ' + prevSnipId);
+          }
+          newSnippet.prev = foundSnippets.get(prevSnipId) as Snippet;
+        }
+
+        allSnippets.push(newSnippet);
+        foundSnippets.set(idAttrib, newSnippet);
+        // Add a place holder to be populated
+        // parent.children.splice(index + 1, 0, {} as Content);
+      },
+    );
+}
+
+function visitSnipCodeNodes(ast: any, file: any, foundSnippets: Map<string, Snippet>, allSnippets: Snippet[]) {
     visit(
       ast,
       'mdxJsxFlowElement',
@@ -42,7 +99,7 @@ function createTransformer(options: any): Transformer<Root> {
         index: number | null,
         parent: Parent | null,
       ) => {
-        if (index == null || parent == null || node.name != 'SnipCode') {
+        if (index == null || parent == null || node.name != 'Snippet') {
           return;
         }
         const code = getAttrib(node, 'children') || '';
@@ -52,14 +109,14 @@ function createTransformer(options: any): Transformer<Root> {
         const prevSnipId = (getAttrib(node, 'prev') || '').trim();
         if (idAttrib == '' || foundSnippets.has(idAttrib)) {
           throw Error(
-            'SnipCode elements *must* have a unique ID within the page',
+            'Snippet elements *must* have a unique ID within the page',
           );
         }
         const newSnippet = new Snippet(idAttrib, node, parent, code);
         newSnippet.setupCode = setupCode;
         newSnippet.hidden = getAttrib(node, 'hidden') || false;
-        newSnippet.hideOutput = getAttrib(node, 'hideOutput') || false;
-        newSnippet.index = allSnippets.length - 1;
+        newSnippet.silent = getAttrib(node, 'silent') || false;
+        newSnippet.childIndex = index,
         newSnippet.promise = newSnippet.execute('/tmp/enva');
         if (prevSnipId != '') {
           if (!foundSnippets.has(prevSnipId)) {
@@ -71,46 +128,9 @@ function createTransformer(options: any): Transformer<Root> {
         allSnippets.push(newSnippet);
         foundSnippets.set(idAttrib, newSnippet);
         // Add a place holder to be populated
-        parent.children.splice(index + 1, 0, {} as Content);
+        // parent.children.splice(index + 1, 0, {} as Content);
       },
     );
-
-    // We run each snippet in its own execution instead of maintaining states etc
-    // This has a couple of benefits:
-    // * We dont need to keep an interpreter/kernel hanging on the
-    //   executor node wherever it is.  Each execution is its own thing and no dependencies
-    //   mess can ensue.
-    // * Our kernel may not even be multi threaded.  For a "serial" notebook style page
-    //   the list of snippets may just be a stick but depending on how prev is used we could
-    //   end up having a tree (dags are not possible - and even if they are since we are not
-    //   capturing any contexts of the VM forking and joining threads and all their data
-    //   becomes a pain).
-    //
-    // So each snippet as a single block with its "real" code beign its provided code +
-    // the real code of all its prev nodes is good enough.  Also no topological sort
-    // needed
-    // Build a dag of all the promises and execute them in a topologically sorted way
-    console.log('=='.repeat(80));
-    console.log(
-      'Full AST: Before ',
-      util.inspect(ast, { showHidden: false, depth: null, colors: true }),
-    );
-    const allPromises = allSnippets.map((sn: any) => sn.promise);
-    const promiseValues = await Promise.all(allPromises);
-    allSnippets.sort((a: any, b: any) => b.index - a.index);
-    console.log('SN: ', allSnippets, 'PromiseValues: ', promiseValues);
-
-    allSnippets.forEach((sncode: Snippet, ind: number) => {
-      const parent = sncode.parent as Parent;
-      const index = sncode.index as number;
-      parent.children.splice(index, 1, ...promiseValues[ind]);
-    });
-
-    console.log(
-      'Full AST: After',
-      util.inspect(ast, { showHidden: false, depth: null, colors: true }),
-    );
-  };
 }
 
 function getAttrib(node: any, attribName: string): any {
@@ -141,8 +161,8 @@ export class Snippet {
   prev: Snippet | null = null;
   setupCode = '';
   hidden = false;
-  hideOutput = false;
-  index = 0;
+  silent = false;
+  childIndex = 0;
   promise: null | Promise<any> = null;
   constructor(
     public readonly id: string,
@@ -188,7 +208,7 @@ export class Snippet {
         codeBlocks: codeBlocks,
         envDir: '/tmp/enva',
       });
-      console.log('Response: ', resp);
+      // console.log('Response: ', resp);
 
       if (resp.execution) {
         out.push({
@@ -212,7 +232,6 @@ export class Snippet {
         const blockOutputs = resp.execution.blockOutputs;
         const processOutput = blockOutputs[blockOutputs.length - 1];
         const value = `<pre><code>{\`${processOutput}\`}</code></pre>`;
-        console.log('Value: ', value);
 
         const processError = resp.execution.errorOutput;
         out.push(parseMarkup(value));
@@ -252,3 +271,18 @@ export class Snippet {
  */
 const remarkMdxSnippets: Plugin<[any], Root> = createTransformer;
 export default remarkMdxSnippets;
+
+function parseMeta(meta: string): Map<string, any> {
+  const cleaned = meta.replaceAll(/\s*=\s*/g, "=")
+  const out = new Map<string, any>();
+  const kvpairs = cleaned.split(" ")
+  for (const kv of kvpairs) {
+    const [key, value] = kv.trim().split("=")
+    let val = value;
+    if (value[0] === '"' && value[value.length - 1] === '"') {
+      val = value.slice(1, -1);
+    }
+    out.set(key, val);
+  }
+  return out;
+}
