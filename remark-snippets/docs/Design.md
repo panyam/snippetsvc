@@ -21,7 +21,7 @@ Some of the options are:
 * lang - Language used by the code snippet.  Defaults to "ts" for typescript.  More languages coming soon.
 * env - ID of the environment being used to run the snippet (more on this later).
 * hidden: boolean - Flag to suppress displaying the code snippet.  This is useful for when the snippet contents are needed for successive snippets but the code itself does not need to be shown.  This is great for hiding boilerplate code (like installing dependencies etc).
-* hideOutput: boolean   - Suppress display of output right after this block.  This can be set to true if output location is to be manually set (see next section).
+: silent: boolean   - Suppress display of output right after this block.  This can be set to true if output location is to be manually set (see next section).
 * prev: string - ID of the previous block that must be executed (to build up context) instead of having to manually duplicate code all over the place.  This is what enables sequential flow of stories.
 
 ## Controlling output location

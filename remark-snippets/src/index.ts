@@ -26,116 +26,116 @@ function createTransformer(options: any): Transformer<Root> {
     const foundSnippets = new Map<string, Snippet>();
     const allSnippets = [] as Snippet[];
     // visitSnipCodeNodes(ast, file, foundSnippets, allSnippets)
-    visitCodeNodes(ast, file, foundSnippets, allSnippets)
+    visitCodeNodes(ast, file, foundSnippets, allSnippets);
 
     // console.log('Full AST Before: ', inspect(ast));
     const allPromises = allSnippets.map((sn: any) => sn.promise);
     const promiseValues = await Promise.all(allPromises);
 
     // reverse snippets and the promise values too
-    allSnippets.reverse()
-    promiseValues.reverse()
+    allSnippets.reverse();
+    promiseValues.reverse();
     // allSnippets.sort((a: Snippet, b: Snippet) => b.childIndex - a.childIndex);
     // console.log('SN: ', allSnippets, 'PromiseValues: ', inspect(promiseValues));
 
     allSnippets.forEach((sncode: Snippet, ind: number) => {
-      const parent = sncode.parent as Parent;
-      const index = sncode.childIndex as number;
-      // console.log("Inserting after: ", parent.children[index]);
-      parent.children.splice(index + 1, 0, ...promiseValues[ind]);
-      // console.log('Full AST After: ', index, inspect(ast));
+      if (!sncode.silent) {
+        const parent = sncode.parent as Parent;
+        const index = sncode.childIndex as number;
+        // console.log("Inserting after: ", parent.children[index]);
+        parent.children.splice(index + 1, 0, ...promiseValues[ind]);
+        // console.log('Full AST After: ', index, inspect(ast));
+      }
     });
   };
 }
 
-function visitCodeNodes(ast: any, file: any, foundSnippets: Map<string, Snippet>, allSnippets: Snippet[]) {
-    visit(
-      ast,
-      'code',
-      (
-        node: Code,
-        index: number | null,
-        parent: Parent | null,
-      ) => {
-        if (index == null || parent == null || !node.meta || !node.lang) {
-          return;
+function visitCodeNodes(
+  ast: any,
+  file: any,
+  foundSnippets: Map<string, Snippet>,
+  allSnippets: Snippet[],
+) {
+  visit(
+    ast,
+    'code',
+    (node: Code, index: number | null, parent: Parent | null) => {
+      if (index == null || parent == null || !node.meta || !node.lang) {
+        return;
+      }
+      const attribs = parseMeta(node.meta);
+      // Our param values do not allow for strings with " = " in them
+      console.log('Meta: ', node.meta, attribs);
+      const idAttrib = attribs.get('snippet') || null;
+      if (idAttrib == null) {
+        return;
+      }
+      if (foundSnippets.has(idAttrib)) {
+        throw Error('Snippet elements *must* have a unique ID within the page');
+      }
+      const code = node.value;
+      // const env = attribs.get("env");
+      const prevSnipId = (attribs.get('prev') || '').trim();
+      const newSnippet = new Snippet(idAttrib, node, parent, code);
+      newSnippet.hidden = attribs.get('hidden') == 'true';
+      newSnippet.silent = attribs.get('silent') == 'true';
+      newSnippet.childIndex = index;
+      newSnippet.promise = newSnippet.execute('/tmp/enva');
+      if (prevSnipId != '') {
+        if (!foundSnippets.has(prevSnipId)) {
+          throw new Error('Previous snippet not found: ' + prevSnipId);
         }
-        const attribs = parseMeta(node.meta);
-        // Our param values do not allow for strings with " = " in them
-        console.log("Meta: ", node.meta, attribs)
-        const idAttrib = attribs.get("snippet") || null;
-        if (idAttrib == null) {
-          return;
-        }
-        if (foundSnippets.has(idAttrib)) {
-          throw Error(
-            'Snippet elements *must* have a unique ID within the page',
-          );
-        }
-        const code = node.value;
-        // const env = attribs.get("env");
-        const prevSnipId = (attribs.get("prev") || "").trim()
-        const newSnippet = new Snippet(idAttrib, node, parent, code);
-        newSnippet.hidden = attribs.get("hidden") == "true"
-        newSnippet.silent = attribs.get("silent") == "true"
-        newSnippet.childIndex = index;
-        newSnippet.promise = newSnippet.execute('/tmp/enva');
-        if (prevSnipId != '') {
-          if (!foundSnippets.has(prevSnipId)) {
-            throw new Error('Previous snippet not found: ' + prevSnipId);
-          }
-          newSnippet.prev = foundSnippets.get(prevSnipId) as Snippet;
-        }
+        newSnippet.prev = foundSnippets.get(prevSnipId) as Snippet;
+      }
 
-        allSnippets.push(newSnippet);
-        foundSnippets.set(idAttrib, newSnippet);
-        // Add a place holder to be populated
-        // parent.children.splice(index + 1, 0, {} as Content);
-      },
-    );
+      allSnippets.push(newSnippet);
+      foundSnippets.set(idAttrib, newSnippet);
+      // Add a place holder to be populated
+      // parent.children.splice(index + 1, 0, {} as Content);
+    },
+  );
 }
 
-function visitSnipCodeNodes(ast: any, file: any, foundSnippets: Map<string, Snippet>, allSnippets: Snippet[]) {
-    visit(
-      ast,
-      'mdxJsxFlowElement',
-      (
-        node: MdxJsxFlowElement,
-        index: number | null,
-        parent: Parent | null,
-      ) => {
-        if (index == null || parent == null || node.name != 'Snippet') {
-          return;
+function visitSnipCodeNodes(
+  ast: any,
+  file: any,
+  foundSnippets: Map<string, Snippet>,
+  allSnippets: Snippet[],
+) {
+  visit(
+    ast,
+    'mdxJsxFlowElement',
+    (node: MdxJsxFlowElement, index: number | null, parent: Parent | null) => {
+      if (index == null || parent == null || node.name != 'Snippet') {
+        return;
+      }
+      const code = getAttrib(node, 'children') || '';
+      const setupCode = getAttrib(node, 'setup') || '';
+      const idAttrib = (getAttrib(node, 'id') || '').trim();
+      const env = getAttrib(node, 'env');
+      const prevSnipId = (getAttrib(node, 'prev') || '').trim();
+      if (idAttrib == '' || foundSnippets.has(idAttrib)) {
+        throw Error('Snippet elements *must* have a unique ID within the page');
+      }
+      const newSnippet = new Snippet(idAttrib, node, parent, code);
+      newSnippet.setupCode = setupCode;
+      newSnippet.hidden = getAttrib(node, 'hidden') || false;
+      newSnippet.silent = getAttrib(node, 'silent') || false;
+      newSnippet.childIndex = index;
+      newSnippet.promise = newSnippet.execute('/tmp/enva');
+      if (prevSnipId != '') {
+        if (!foundSnippets.has(prevSnipId)) {
+          throw new Error('Previous snippet not found: ' + prevSnipId);
         }
-        const code = getAttrib(node, 'children') || '';
-        const setupCode = getAttrib(node, 'setup') || '';
-        const idAttrib = (getAttrib(node, 'id') || '').trim();
-        const env = getAttrib(node, 'env');
-        const prevSnipId = (getAttrib(node, 'prev') || '').trim();
-        if (idAttrib == '' || foundSnippets.has(idAttrib)) {
-          throw Error(
-            'Snippet elements *must* have a unique ID within the page',
-          );
-        }
-        const newSnippet = new Snippet(idAttrib, node, parent, code);
-        newSnippet.setupCode = setupCode;
-        newSnippet.hidden = getAttrib(node, 'hidden') || false;
-        newSnippet.silent = getAttrib(node, 'silent') || false;
-        newSnippet.childIndex = index,
-        newSnippet.promise = newSnippet.execute('/tmp/enva');
-        if (prevSnipId != '') {
-          if (!foundSnippets.has(prevSnipId)) {
-            throw new Error('Previous snippet not found: ' + prevSnipId);
-          }
-          newSnippet.prev = foundSnippets.get(prevSnipId)!;
-        }
+        newSnippet.prev = foundSnippets.get(prevSnipId)!;
+      }
 
-        allSnippets.push(newSnippet);
-        foundSnippets.set(idAttrib, newSnippet);
-        // Add a place holder to be populated
-        // parent.children.splice(index + 1, 0, {} as Content);
-      },
-    );
+      allSnippets.push(newSnippet);
+      foundSnippets.set(idAttrib, newSnippet);
+      // Add a place holder to be populated
+      // parent.children.splice(index + 1, 0, {} as Content);
+    },
+  );
 }
 
 function getAttrib(node: any, attribName: string): any {
@@ -278,11 +278,11 @@ const remarkMdxSnippets: Plugin<[any], Root> = createTransformer;
 export default remarkMdxSnippets;
 
 function parseMeta(meta: string): Map<string, any> {
-  const cleaned = meta.replaceAll(/\s*=\s*/g, "=")
+  const cleaned = meta.replaceAll(/\s*=\s*/g, '=');
   const out = new Map<string, any>();
-  const kvpairs = cleaned.split(" ")
+  const kvpairs = cleaned.split(' ');
   for (const kv of kvpairs) {
-    const [key, value] = kv.trim().split("=")
+    const [key, value] = kv.trim().split('=');
     let val = value;
     if (value[0] === '"' && value[value.length - 1] === '"') {
       val = value.slice(1, -1);
