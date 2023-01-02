@@ -1,6 +1,6 @@
 {
   "name": "remark-snippets",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "Sriram Panyam",
   "description": "A snippet plugin for MDX where snippets are executed and their outputs caputred allowing for upto date documentation pages.",
   "license": "ISC",
