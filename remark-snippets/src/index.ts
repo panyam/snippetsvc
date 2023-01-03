@@ -72,7 +72,6 @@ function visitSnipOutNodes(
       }
       // only attribute needed here is the ID of the snippet we want to show
       const attribs = parseMeta(node.meta);
-      console.log('Meta: ', node.meta, attribs);
       const srcId = attribs.get('src') || null;
       if (srcId == null) {
         return;
@@ -85,9 +84,7 @@ function visitSnipOutNodes(
 
       snippet.promise?.then((val) => {
         parent.children[index] = parseMarkup(val[1].value);
-        console.log('Doing snipout');
       });
-      console.log('Done snipout');
     },
   );
 }
@@ -114,7 +111,6 @@ function visitCodeNodes(
       }
       const attribs = parseMeta(node.meta);
       // Our param values do not allow for strings with " = " in them
-      console.log('Meta: ', node.meta, attribs);
       const idAttrib = attribs.get('snippet') || null;
       if (idAttrib == null) {
         return;
