@@ -47,7 +47,49 @@ function createTransformer(options: any): Transformer<Root> {
         // console.log('Full AST After: ', index, inspect(ast));
       }
     });
+
+    // Now visit all snippet output nodes
+    visitSnipOutNodes(ast, file, foundSnippets);
   };
+}
+
+function visitSnipOutNodes(
+  ast: any,
+  file: any,
+  foundSnippets: Map<string, Snippet>,
+) {
+  visit(
+    ast,
+    'code',
+    (node: Code, index: number | null, parent: Parent | null) => {
+      if (
+        index == null ||
+        parent == null ||
+        !node.meta ||
+        node.lang != 'snipout'
+      ) {
+        return;
+      }
+      // only attribute needed here is the ID of the snippet we want to show
+      const attribs = parseMeta(node.meta);
+      console.log('Meta: ', node.meta, attribs);
+      const srcId = attribs.get('src') || null;
+      if (srcId == null) {
+        return;
+      }
+
+      const snippet = foundSnippets.get(srcId) || null;
+      if (snippet == null) {
+        throw Error('Snippet does not exist in page: ' + srcId);
+      }
+
+      snippet.promise?.then((val) => {
+        parent.children[index] = parseMarkup(val[1].value);
+        console.log('Doing snipout');
+      });
+      console.log('Done snipout');
+    },
+  );
 }
 
 function visitCodeNodes(
@@ -60,7 +102,14 @@ function visitCodeNodes(
     ast,
     'code',
     (node: Code, index: number | null, parent: Parent | null) => {
-      if (index == null || parent == null || !node.meta || !node.lang) {
+      if (
+        index == null ||
+        parent == null ||
+        !node.meta ||
+        !node.lang ||
+        node.lang == 'snipout'
+      ) {
+        // snipouts these are to be handled after snippets to generate output
         return;
       }
       const attribs = parseMeta(node.meta);
@@ -102,6 +151,19 @@ function visitSnipCodeNodes(
   foundSnippets: Map<string, Snippet>,
   allSnippets: Snippet[],
 ) {
+  function getAttrib(node: any, attribName: string): any {
+    const attrib = node.attributes.filter(
+      (attr: any) => attr.type == 'mdxJsxAttribute' && attr.name == attribName,
+    );
+    if (attrib.length == 0 || !attrib[0].value || attrib[0].value == null) {
+      return null;
+    }
+    if (typeof attrib[0].value === 'string') {
+      return attrib[0].value;
+    } else {
+      return attrib[0].value.value;
+    }
+  }
   visit(
     ast,
     'mdxJsxFlowElement',
@@ -136,20 +198,6 @@ function visitSnipCodeNodes(
       // parent.children.splice(index + 1, 0, {} as Content);
     },
   );
-}
-
-function getAttrib(node: any, attribName: string): any {
-  const attrib = node.attributes.filter(
-    (attr: any) => attr.type == 'mdxJsxAttribute' && attr.name == attribName,
-  );
-  if (attrib.length == 0 || !attrib[0].value || attrib[0].value == null) {
-    return null;
-  }
-  if (typeof attrib[0].value === 'string') {
-    return attrib[0].value;
-  } else {
-    return attrib[0].value.value;
-  }
 }
 
 const parser = Parser.extend(jsx());
@@ -236,7 +284,7 @@ export class Snippet {
 
         const blockOutputs = resp.execution.blockOutputs;
         const processOutput = blockOutputs[blockOutputs.length - 1];
-        const value = `<pre><code>{\`${processOutput}\`}</code></pre>`;
+        const value = `<pre><code className="hljs language-ts">{\`${processOutput}\`}</code></pre>`;
 
         const processError = resp.execution.errorOutput;
         out.push(parseMarkup(value));
