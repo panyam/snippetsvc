@@ -129,13 +129,13 @@ function visitCodeNodes(
       newSnippet.hidden = attribs.get('hidden') == 'true';
       newSnippet.silent = attribs.get('silent') == 'true';
       newSnippet.childIndex = index;
-      newSnippet.promise = newSnippet.execute('/tmp/enva');
       if (prevSnipId != '') {
         if (!foundSnippets.has(prevSnipId)) {
           throw new Error('Previous snippet not found: ' + prevSnipId);
         }
         newSnippet.prev = foundSnippets.get(prevSnipId) as Snippet;
       }
+      newSnippet.promise = newSnippet.execute('/tmp/enva');
 
       allSnippets.push(newSnippet);
       foundSnippets.set(idAttrib, newSnippet);
