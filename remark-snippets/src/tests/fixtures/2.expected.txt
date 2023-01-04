@@ -5,6 +5,7 @@ function _createMdxContent(props) {
       p: "p",
       pre: "pre",
       code: "code",
+      div: "div",
     },
     props.components
   );
@@ -18,15 +19,17 @@ function _createMdxContent(props) {
         </_components.code>
       </_components.pre>
       {"\n"}
-      <h3>
+      <h4>
         <_components.p>{"Output"}</_components.p>
-      </h3>
+      </h4>
       {"\n"}
       {
-        <_components.pre>
-          <_components.code>{`Line 1
+        <_components.div className="snippetOutput" snippetId="1">
+          <_components.pre>
+            <_components.code className="hljs language-ts">{`Line 1
 `}</_components.code>
-        </_components.pre>
+          </_components.pre>
+        </_components.div>
       }
       {"\n"}
       <_components.p>{"Before Para 2"}</_components.p>

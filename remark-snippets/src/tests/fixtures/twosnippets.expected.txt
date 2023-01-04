@@ -6,6 +6,7 @@ function _createMdxContent(props) {
       pre: "pre",
       code: "code",
       p: "p",
+      div: "div",
     },
     props.components
   );
@@ -19,15 +20,17 @@ function _createMdxContent(props) {
         </_components.code>
       </_components.pre>
       {"\n"}
-      <h3>
+      <h4>
         <_components.p>{"Output"}</_components.p>
-      </h3>
+      </h4>
       {"\n"}
       {
-        <_components.pre>
-          <_components.code>{`Line 1
+        <_components.div className="snippetOutput" snippetId="1">
+          <_components.pre>
+            <_components.code className="hljs language-ts">{`Line 1
 `}</_components.code>
-        </_components.pre>
+          </_components.pre>
+        </_components.div>
       }
       {"\n"}
       <_components.h2>{"Source 2"}</_components.h2>
@@ -38,15 +41,17 @@ function _createMdxContent(props) {
         </_components.code>
       </_components.pre>
       {"\n"}
-      <h3>
+      <h4>
         <_components.p>{"Output"}</_components.p>
-      </h3>
+      </h4>
       {"\n"}
       {
-        <_components.pre>
-          <_components.code>{`Line 2
+        <_components.div className="snippetOutput" snippetId="2">
+          <_components.pre>
+            <_components.code className="hljs language-ts">{`Line 2
 `}</_components.code>
-        </_components.pre>
+          </_components.pre>
+        </_components.div>
       }
     </>
   );

@@ -90,7 +90,7 @@ function visitSnipOutNodes(
         index == null ||
         parent == null ||
         !node.meta ||
-        node.lang != 'snipout'
+        node.lang != 'snippout'
       ) {
         return;
       }
@@ -117,9 +117,9 @@ function visitCodeNodes(
         parent == null ||
         !node.meta ||
         !node.lang ||
-        node.lang == 'snipout'
+        node.lang == 'snippout'
       ) {
-        // snipouts these are to be handled after snippets to generate output
+        // snippouts these are to be handled after snippets to generate output
         return;
       }
       const attribs = parseMeta(node.meta);
@@ -145,6 +145,11 @@ function visitCodeNodes(
         newSnippet.prev = foundSnippets.get(prevSnipId) as Snippet;
       }
       newSnippet.promise = newSnippet.execute('/tmp/enva');
+
+      if (newSnippet.hidden) {
+        // then remove this as it was not needed
+        parent.children.splice(index, 1);
+      }
 
       allSnippets.push(newSnippet);
       foundSnippets.set(idAttrib, newSnippet);
@@ -280,7 +285,7 @@ export class Snippet {
 
         const blockOutputs = resp.execution.blockOutputs;
         const processOutput = blockOutputs[blockOutputs.length - 1];
-        const value = `<pre><code className="hljs language-ts">{\`${processOutput}\`}</code></pre>`;
+        const value = `<div className="snippetOutput" snippetId="${this.id}"><pre><code className="hljs language-ts">{\`${processOutput}\`}</code></pre></div>`;
 
         const processError = resp.execution.errorOutput;
         out.push(parseMarkup(value));

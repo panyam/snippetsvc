@@ -2,35 +2,36 @@
 function _createMdxContent(props) {
   const _components = Object.assign(
     {
-      pre: "pre",
-      code: "code",
       p: "p",
       div: "div",
+      pre: "pre",
+      code: "code",
     },
     props.components
   );
   return (
     <>
-      <_components.pre>
-        <_components.code className="language-ts">
-          {'  console.log("Hello world")\n'}
-        </_components.code>
-      </_components.pre>
-      {"\n"}
-      <h4>
-        <_components.p>{"Output"}</_components.p>
-      </h4>
+      <_components.p>{"Before Para 2"}</_components.p>
       {"\n"}
       {
-        <_components.div className="snippetOutput" snippetId="1">
+        <_components.div className="snippetOutput" snippetId="sn1">
           <_components.pre>
-            <_components.code className="hljs language-ts">{`Hello world
+            <_components.code className="hljs language-ts">{`Line 1
 `}</_components.code>
           </_components.pre>
         </_components.div>
       }
       {"\n"}
-      <a>{"Test"}</a>
+      <_components.p>{"And again"}</_components.p>
+      {"\n"}
+      {
+        <_components.div className="snippetOutput" snippetId="sn1">
+          <_components.pre>
+            <_components.code className="hljs language-ts">{`Line 1
+`}</_components.code>
+          </_components.pre>
+        </_components.div>
+      }
     </>
   );
 }

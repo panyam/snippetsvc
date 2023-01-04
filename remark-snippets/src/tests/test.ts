@@ -71,5 +71,6 @@ const startTest = (name: string, override = false) =>
 startTest('basic', false);
 startTest('2', false);
 startTest('twosnippets', false);
+startTest('snippout', false);
 
 test.run();
