@@ -58,6 +58,30 @@ function visitSnipOutNodes(
   file: any,
   foundSnippets: Map<string, Snippet>,
 ) {
+  function checkSnipOut(parent: Parent, index: number, srcId: string) {
+    if (srcId == null) {
+      return;
+    }
+    const snippet = foundSnippets.get(srcId) || null;
+    if (snippet == null) {
+      throw Error('Snippet does not exist in page: ' + srcId);
+    }
+
+    snippet.promise?.then((val) => {
+      parent.children[index] = parseMarkup(val[1].value);
+    });
+  }
+  visit(
+    ast,
+    'mdxJsxFlowElement',
+    (node: MdxJsxFlowElement, index: number | null, parent: Parent | null) => {
+      if (index == null || parent == null || node.name != 'SnippOut') {
+        return;
+      }
+      const srcId = getAttrib(node, 'src') || '';
+      checkSnipOut(parent, index, srcId);
+    },
+  );
   visit(
     ast,
     'code',
@@ -73,18 +97,7 @@ function visitSnipOutNodes(
       // only attribute needed here is the ID of the snippet we want to show
       const attribs = parseMeta(node.meta);
       const srcId = attribs.get('src') || null;
-      if (srcId == null) {
-        return;
-      }
-
-      const snippet = foundSnippets.get(srcId) || null;
-      if (snippet == null) {
-        throw Error('Snippet does not exist in page: ' + srcId);
-      }
-
-      snippet.promise?.then((val) => {
-        parent.children[index] = parseMarkup(val[1].value);
-      });
+      checkSnipOut(parent, index, srcId);
     },
   );
 }
@@ -147,19 +160,6 @@ function visitSnipCodeNodes(
   foundSnippets: Map<string, Snippet>,
   allSnippets: Snippet[],
 ) {
-  function getAttrib(node: any, attribName: string): any {
-    const attrib = node.attributes.filter(
-      (attr: any) => attr.type == 'mdxJsxAttribute' && attr.name == attribName,
-    );
-    if (attrib.length == 0 || !attrib[0].value || attrib[0].value == null) {
-      return null;
-    }
-    if (typeof attrib[0].value === 'string') {
-      return attrib[0].value;
-    } else {
-      return attrib[0].value.value;
-    }
-  }
   visit(
     ast,
     'mdxJsxFlowElement',
@@ -334,4 +334,18 @@ function parseMeta(meta: string): Map<string, any> {
     out.set(key, val);
   }
   return out;
+}
+
+function getAttrib(node: any, attribName: string): any {
+  const attrib = node.attributes.filter(
+    (attr: any) => attr.type == 'mdxJsxAttribute' && attr.name == attribName,
+  );
+  if (attrib.length == 0 || !attrib[0].value || attrib[0].value == null) {
+    return null;
+  }
+  if (typeof attrib[0].value === 'string') {
+    return attrib[0].value;
+  } else {
+    return attrib[0].value.value;
+  }
 }
