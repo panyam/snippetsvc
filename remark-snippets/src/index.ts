@@ -262,7 +262,7 @@ export class Snippet {
       if (resp.execution) {
         out.push({
           type: 'mdxJsxFlowElement',
-          name: 'h3',
+          name: 'h4',
           attributes: [],
           children: [
             {
@@ -287,7 +287,7 @@ export class Snippet {
         if (processError.length > 0) {
           out.push({
             type: 'mdxJsxFlowElement',
-            name: 'h3',
+            name: 'h4',
             attributes: [],
             children: [
               {
