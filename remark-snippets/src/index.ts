@@ -21,7 +21,15 @@ function createTransformer(options: any): Transformer<Root> {
   return async (ast, file) => {
     if (logTree) {
       console.log('Options: ', inspect(options));
-      console.log('Full File: ', inspect(file));
+      console.log(
+        'Full File: ',
+        inspect(file),
+        file.stem,
+        file.dirname,
+        file.basename,
+        file.extname,
+        file.path,
+      );
     }
     const foundSnippets = new Map<string, Snippet>();
     const allSnippets = [] as Snippet[];
@@ -134,7 +142,7 @@ function visitCodeNodes(
       const code = node.value;
       // const env = attribs.get("env");
       const prevSnipId = (attribs.get('prev') || '').trim();
-      const newSnippet = new Snippet(idAttrib, node, parent, code);
+      const newSnippet = new Snippet(idAttrib, node, parent, code, file);
       newSnippet.hidden = attribs.get('hidden') == 'true';
       newSnippet.silent = attribs.get('silent') == 'true';
       newSnippet.childIndex = index;
@@ -223,6 +231,7 @@ export class Snippet {
     public readonly node: Content,
     public readonly parent: Parent,
     public code = '',
+    public file: any = null,
   ) {}
 
   get codeBlocks(): string[] {
@@ -252,13 +261,15 @@ export class Snippet {
   async execute(envdir: string): Promise<any[]> {
     const codeBlocks = this.codeBlocks;
     const out = [] as any[];
+    const filepath = encodeURIComponent(this.file.history[0]);
+    const snippetId = `${filepath}:${this.id}`;
     try {
       const resp = await snippets.call<
         snippets.CreateExecutionRequest,
         snippets.CreateExecutionResponse
       >(snippetsClient, 'createExecution', {
         ownerId: '1',
-        snippetId: this.id,
+        snippetId: snippetId,
         codeBlocks: codeBlocks,
         envDir: '/tmp/enva',
       });
