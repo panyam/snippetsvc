@@ -44,7 +44,7 @@
   "dependencies": {
     "@types/mdast": "^3.0.10",
     "acorn-jsx": "^5.3.2",
-    "snippetsvc": "file:../tssnippets",
+    "snippetsvc": "^0.0.13",
     "unified": "^10.1.2",
     "unist-util-visit": "^4.1.1"
   },
